@@ -1,0 +1,504 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit_mode %}Chỉnh sửa{% else %}Tạo{% endif %} khóa học - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{% if edit_mode %} Chỉnh sửa{% else %}➕ Tạo{% endif %} khóa học</h1>
+    <p class="subtitle">Tạo khóa học với video, tài liệu và câu hỏi kiểm tra</p>
+    
+    <form id="courseForm">
+        <div class="form-section">
+            <h3> Thông tin khóa học</h3>
+            
+            <div class="form-group">
+                <label for="title">Tên khóa học: <span class="required">*</span></label>
+                <input type="text" id="title" placeholder="VD: Lập trình Python cơ bản" required 
+                    {% if edit_mode %}value="{{ course.title }}"{% endif %}>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Mô tả khóa học:</label>
+                <textarea id="description" rows="4" placeholder="Mô tả nội dung và mục tiêu của khóa học...">{% if edit_mode %}{{ course.description }}{% endif %}</textarea>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="section-header">
+                <h3> Bài học</h3>
+                <button type="button" onclick="addLesson()" class="btn btn-primary btn-small">
+                    + Thêm bài học
+                </button>
+            </div>
+            
+            <div id="lessons-container"></div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success btn-large">
+                ✓ {% if edit_mode %}Cập nhật{% else %}Tạo{% endif %} khóa học
+            </button>
+            <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">← Hủy</a>
+        </div>
+    </form>
+</div>
+
+<script>
+let lessonCount = 0;
+
+{% if edit_mode and course.lessons %}
+const existingLessons = {{ course.lessons | tojson }};
+existingLessons.forEach(lesson => {
+    addLesson(lesson);
+});
+{% else %}
+addLesson();
+{% endif %}
+
+function addLesson(existingData = null) {
+    lessonCount++;
+    const container = document.getElementById('lessons-container');
+    
+    const lessonDiv = document.createElement('div');
+    lessonDiv.className = 'lesson-form';
+    lessonDiv.innerHTML = `
+        <div class="lesson-header">
+            <h4> Bài học ${lessonCount}</h4>
+            <button type="button" onclick="removeLesson(this)" class="btn btn-danger btn-small">
+                 Xóa
+            </button>
+        </div>
+        
+        <div class="form-group">
+            <label>Tiêu đề bài học: <span class="required">*</span></label>
+            <input type="text" class="lesson-title" placeholder="VD: Giới thiệu về Python" required
+                value="${existingData ? existingData.title : ''}">
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label>Link video YouTube:</label>
+                <input type="url" class="lesson-video" placeholder="https://youtube.com/watch?v=..."
+                    value="${existingData ? existingData.video_url || '' : ''}">
+            </div>
+            
+            <div class="form-group">
+                <label>Link tài liệu (Google Drive/PDF):</label>
+                <input type="url" class="lesson-doc" placeholder="https://drive.google.com/..."
+                    value="${existingData ? existingData.document_url || '' : ''}">
+            </div>
+        </div>
+        
+        <div class="questions-section">
+            <div class="questions-header">
+                <label>Câu hỏi kiểm tra:</label>
+                <button type="button" onclick="addQuestion(this)" class="btn btn-secondary btn-small">
+                    + Thêm câu hỏi
+                </button>
+            </div>
+            <div class="questions-container"></div>
+        </div>
+    `;
+    
+    container.appendChild(lessonDiv);
+    
+    if (existingData && existingData.questions) {
+        const questionsContainer = lessonDiv.querySelector('.questions-container');
+        existingData.questions.forEach(q => {
+            addQuestionToContainer(questionsContainer, q);
+        });
+    }
+}
+
+function removeLesson(btn) {
+    if (confirm('Bạn có chắc muốn xóa bài học này?')) {
+        btn.closest('.lesson-form').remove();
+    }
+}
+
+function addQuestion(btn) {
+    const lessonDiv = btn.closest('.lesson-form');
+    const questionsContainer = lessonDiv.querySelector('.questions-container');
+    addQuestionToContainer(questionsContainer);
+}
+
+function addQuestionToContainer(container, existingData = null) {
+    const questionDiv = document.createElement('div');
+    questionDiv.className = 'question-item';
+    
+    const questionNum = container.children.length + 1;
+    
+    questionDiv.innerHTML = `
+        <div class="question-header-small">
+            <strong>Câu ${questionNum}</strong>
+            <button type="button" onclick="removeQuestion(this)" class="btn-remove-small">✕</button>
+        </div>
+        
+        <div class="form-group">
+            <label>Nội dung câu hỏi:</label>
+            <input type="text" class="question-text" placeholder="Nhập câu hỏi..." required
+                value="${existingData ? existingData.question || '' : ''}">
+        </div>
+        
+        <div class="form-group">
+            <label>Loại câu hỏi:</label>
+            <select class="question-type" onchange="toggleQuestionType(this)">
+                <option value="text" ${existingData && !existingData.options ? 'selected' : ''}>Tự luận</option>
+                <option value="multiple" ${existingData && existingData.options ? 'selected' : ''}>Trắc nghiệm</option>
+            </select>
+        </div>
+        
+        <div class="multiple-choice-section" style="display: ${existingData && existingData.options ? 'block' : 'none'};">
+            <div class="form-group">
+                <label>Các lựa chọn (mỗi dòng 1 lựa chọn):</label>
+                <textarea class="question-options" rows="4" placeholder="A. Lựa chọn 1&#10;B. Lựa chọn 2&#10;C. Lựa chọn 3&#10;D. Lựa chọn 4">${existingData && existingData.options ? existingData.options.join('\n') : ''}</textarea>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Đáp án đúng: <span class="required">*</span></label>
+            <input type="text" class="question-answer" placeholder="Nhập đáp án đúng (VD: A hoặc câu trả lời)" required
+                value="${existingData ? existingData.correct_answer || '' : ''}">
+            <small class="form-hint">Với trắc nghiệm: nhập A, B, C hoặc D. Với tự luận: nhập câu trả lời mẫu</small>
+        </div>
+    `;
+    
+    container.appendChild(questionDiv);
+}
+
+function toggleQuestionType(select) {
+    const questionItem = select.closest('.question-item');
+    const multipleSection = questionItem.querySelector('.multiple-choice-section');
+    
+    if (select.value === 'multiple') {
+        multipleSection.style.display = 'block';
+    } else {
+        multipleSection.style.display = 'none';
+    }
+}
+
+function removeQuestion(btn) {
+    if (confirm('Bạn có chắc muốn xóa câu hỏi này?')) {
+        btn.closest('.question-item').remove();
+    }
+}
+
+document.getElementById('courseForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const lessons = [];
+    document.querySelectorAll('.lesson-form').forEach((lessonDiv, index) => {
+        const questions = [];
+        
+        lessonDiv.querySelectorAll('.question-item').forEach(questionDiv => {
+            const questionType = questionDiv.querySelector('.question-type').value;
+            const questionText = questionDiv.querySelector('.question-text').value.trim();
+            const correctAnswer = questionDiv.querySelector('.question-answer').value.trim();
+            
+            if (!questionText || !correctAnswer) {
+                return;
+            }
+            
+            const questionData = {
+                question: questionText,
+                correct_answer: correctAnswer
+            };
+            
+            if (questionType === 'multiple') {
+                const optionsText = questionDiv.querySelector('.question-options').value;
+                const options = optionsText.split('\n').filter(opt => opt.trim());
+                if (options.length > 0) {
+                    questionData.options = options;
+                }
+            }
+            
+            questions.push(questionData);
+        });
+        
+        lessons.push({
+            id: String(index + 1),
+            title: lessonDiv.querySelector('.lesson-title').value.trim(),
+            video_url: lessonDiv.querySelector('.lesson-video').value.trim(),
+            document_url: lessonDiv.querySelector('.lesson-doc').value.trim(),
+            questions: questions
+        });
+    });
+    
+    const courseData = {
+        title: document.getElementById('title').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        lessons: lessons
+    };
+    
+    if (!courseData.title) {
+        alert('Vui lòng nhập tên khóa học!');
+        return;
+    }
+    
+    if (lessons.length === 0) {
+        alert('Vui lòng thêm ít nhất một bài học!');
+        return;
+    }
+    
+    try {
+        const url = '{% if edit_mode %}/teacher/edit_course/{{ course.id }}{% else %}/teacher/create_course{% endif %}';
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(courseData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✓ {% if edit_mode %}Cập nhật{% else %}Tạo{% endif %} khóa học thành công!');
+            window.location.href = '/teacher/dashboard';
+        } else {
+            alert('✗ Lỗi: ' + data.message);
+        }
+    } catch (error) {
+        alert('✗ Có lỗi xảy ra: ' + error.message);
+        console.error(error);
+    }
+});
+</script>
+
+<style>
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.form-section {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-section h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-header h3 {
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.required {
+    color: red;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.form-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.lesson-form {
+    background: #f8f9fa;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+}
+
+.lesson-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+.lesson-header h4 {
+    margin: 0;
+    color: #333;
+}
+
+.questions-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.questions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.questions-header label {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.question-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+
+.question-header-small {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.btn-remove-small {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+}
+
+.btn-remove-small:hover {
+    background: #c82333;
+}
+
+.multiple-choice-section {
+    margin-top: 10px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-large {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+</style>
+{% endblock %}

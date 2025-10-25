@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "username": "colan",
+    "password": "giaovientin",
+    "email": "giaovien@school.edu.vn",
+    "role": "teacher",
+    "created_at": "2025-01-10T08:00:00"
+  },
+  {
+    "id": "2",
+    "username": "nguyenvana",
+    "password": "scrypt:32768:8:1$...",
+    "email": "vana@student.edu.vn",
+    "role": "student",
+    "created_at": "2025-01-12T09:00:00"
+  },
+  {
+    "id": "3",
+    "username": "tranthib",
+    "password": "scrypt:32768:8:1$...",
+    "email": "thib@student.edu.vn",
+    "role": "student",
+    "created_at": "2025-01-13T10:00:00"
+  },
+  {
+    "id": "4",
+    "username": "tuan",
+    "password": "scrypt:32768:8:1$MiyWTJmx3HHbawpf$d2d1744d9aaa2bfbe54263da27a87fae4f39d745747c5f2cbf09fc7c80743cfbbcda8703d0c473b6c3dec244456092afd1a18dfec4b63e934f94f0ddef8aff37",
+    "email": "minhthaibro2025@gmail.com",
+    "role": "student",
+    "created_at": "2025-10-22T21:01:30.920902"
+  },
+  {
+    "id": "5",
+    "username": "hocsinh",
+    "password": "scrypt:32768:8:1$QhbikAMhGhF87PAB$b023f38b23639be92847a176a0daa445631f903c993501a6242ef87ccae6eb9879c37737ef9f10f52a6e97c1e6286ea1a56bdf67915c31d7f38bad0766211c3e",
+    "email": "dmkasnfoa@gmail.com",
+    "role": "student",
+    "created_at": "2025-10-23T11:04:27.985261"
+  }
+]

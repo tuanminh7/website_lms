@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Không tìm thấy trang{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-content">
+        <h1 class="error-code">404</h1>
+        <h2>Oops! Không tìm thấy trang</h2>
+        <p>Trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">← Về trang chủ</a>
+    </div>
+</div>
+
+<style>
+.error-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 20px;
+}
+
+.error-content {
+    text-align: center;
+    max-width: 500px;
+}
+
+.error-code {
+    font-size: 120px;
+    font-weight: bold;
+    color: #007bff;
+    margin: 0;
+    line-height: 1;
+}
+
+.error-content h2 {
+    font-size: 28px;
+    color: #333;
+    margin: 20px 0 10px;
+}
+
+.error-content p {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+</style>
+{% endblock %}

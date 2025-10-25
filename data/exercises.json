@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1",
+    "user_id": "4",
+    "exercise_id": {
+      "isTrusted": true
+    },
+    "answers": [],
+    "submitted_at": "2025-10-23T00:28:26.177817"
+  },
+  {
+    "id": "2",
+    "user_id": "4",
+    "exercise_id": {
+      "isTrusted": true
+    },
+    "answers": [],
+    "submitted_at": "2025-10-23T00:29:24.554162"
+  },
+  {
+    "id": "3",
+    "user_id": "4",
+    "exercise_id": "1",
+    "answers": {
+      "0": "Biến là một tên đại diện cho một giá trị được lưu trong bộ nhớ."
+    },
+    "submitted_at": "2025-10-23T10:37:50.590358"
+  }
+]

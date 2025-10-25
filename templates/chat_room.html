@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Trao Đổi - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4" style="height: calc(100vh - 200px);">
+    <div class="row h-100">
+        <div class="col-md-8 offset-md-2 h-100">
+            <div class="card h-100 d-flex flex-column">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-comments"></i> Chat Trao Đổi Chung
+                        <span class="badge bg-light text-dark ms-2" id="onlineCount">
+                            <i class="fas fa-users"></i> Online
+                        </span>
+                    </h5>
+                    <small>Nơi học sinh và giáo viên trao đổi trực tiếp</small>
+                </div>
+
+                <div class="card-body flex-grow-1 overflow-auto" id="chatMessages" style="background: #f8f9fa;">
+                    {% for msg in messages %}
+                    <div class="message-item mb-3" data-message-id="{{ msg.id }}">
+                        {% if msg.reply_to %}
+                        <div class="reply-indicator ms-4 mb-1 p-2 bg-light rounded small" style="border-left: 3px solid #007bff;">
+                            <i class="fas fa-reply"></i> Trả lời tin nhắn
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-flex {% if msg.author_id == session.user_id %}flex-row-reverse{% endif %}">
+                            <div class="message-bubble p-3 rounded shadow-sm {% if msg.author_id == session.user_id %}bg-primary text-white{% else %}bg-white{% endif %}" 
+                                 style="max-width: 70%;">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <strong>
+                                        {{ msg.author_name }}
+                                        {% if msg.author_role == 'teacher' %}
+                                            <span class="badge {% if msg.author_id == session.user_id %}bg-light text-primary{% else %}bg-success{% endif %}">
+                                                GV
+                                            </span>
+                                        {% endif %}
+                                    </strong>
+                                    <small class="ms-2 {% if msg.author_id == session.user_id %}text-white-50{% else %}text-muted{% endif %}">
+                                        {{ msg.created_at_formatted }}
+                                    </small>
+                                </div>
+                                <div class="message-content">{{ msg.content }}</div>
+                                <div class="message-actions mt-2">
+                                    <button class="btn btn-sm {% if msg.author_id == session.user_id %}btn-light{% else %}btn-outline-primary{% endif %}" 
+                                            onclick="replyTo('{{ msg.id }}', '{{ msg.author_name }}', '{{ msg.content[:30] }}')">
+                                        <i class="fas fa-reply"></i>
+                                    </button>
+                                    {% if msg.author_id == session.user_id %}
+                                    <button class="btn btn-sm btn-danger" onclick="deleteMessage('{{ msg.id }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="card-footer bg-white">
+                    <div id="replyPreview" class="alert alert-info mb-2" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-reply"></i> Đang trả lời: 
+                                <strong id="replyToName"></strong>
+                                <br>
+                                <small id="replyToContent" class="text-muted"></small>
+                            </div>
+                            <button class="btn btn-sm btn-close" onclick="cancelReply()"></button>
+                        </div>
+                    </div>
+                    
+                    <form id="chatForm" class="d-flex">
+                        <input type="text" id="messageInput" class="form-control me-2" 
+                               placeholder="Nhập tin nhắn..." required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Gửi
+                        </button>
+                    </form>
+                    <small class="text-muted d-block mt-2">
+                        <i class="fas fa-info-circle"></i> Tin nhắn tự động cập nhật mỗi 3 giây
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let lastMessageId = '';
+let replyToMessageId = null;
+let refreshInterval;
+
+const chatMessages = document.getElementById('chatMessages');
+const messageInput = document.getElementById('messageInput');
+
+document.querySelectorAll('.message-item').forEach(item => {
+    lastMessageId = item.dataset.messageId;
+});
+
+function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+scrollToBottom();
+
+document.getElementById('chatForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const content = messageInput.value.trim();
+    if (!content) return;
+    
+    try {
+        const response = await fetch('/api/chat/send', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: content,
+                reply_to: replyToMessageId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            messageInput.value = '';
+            cancelReply();
+            addMessageToChat(result.message);
+            scrollToBottom();
+        } else {
+            alert('Lỗi: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+function addMessageToChat(msg) {
+    const isMyMessage = msg.author_id === '{{ session.user_id }}';
+    const messageHtml = `
+        <div class="message-item mb-3" data-message-id="${msg.id}">
+            ${msg.reply_to ? `
+            <div class="reply-indicator ms-4 mb-1 p-2 bg-light rounded small" style="border-left: 3px solid #007bff;">
+                <i class="fas fa-reply"></i> Trả lời tin nhắn
+            </div>
+            ` : ''}
+            
+            <div class="d-flex ${isMyMessage ? 'flex-row-reverse' : ''}">
+                <div class="message-bubble p-3 rounded shadow-sm ${isMyMessage ? 'bg-primary text-white' : 'bg-white'}" 
+                     style="max-width: 70%;">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <strong>
+                            ${msg.author_name}
+                            ${msg.author_role === 'teacher' ? `
+                                <span class="badge ${isMyMessage ? 'bg-light text-primary' : 'bg-success'}">GV</span>
+                            ` : ''}
+                        </strong>
+                        <small class="ms-2 ${isMyMessage ? 'text-white-50' : 'text-muted'}">
+                            ${msg.created_at_formatted}
+                        </small>
+                    </div>
+                    <div class="message-content">${msg.content}</div>
+                    <div class="message-actions mt-2">
+                        <button class="btn btn-sm ${isMyMessage ? 'btn-light' : 'btn-outline-primary'}" 
+                                onclick="replyTo('${msg.id}', '${msg.author_name}', '${msg.content.substring(0, 30)}')">
+                            <i class="fas fa-reply"></i>
+                        </button>
+                        ${isMyMessage ? `
+                        <button class="btn btn-sm btn-danger" onclick="deleteMessage('${msg.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    chatMessages.insertAdjacentHTML('beforeend', messageHtml);
+    lastMessageId = msg.id;
+}
+
+async function fetchNewMessages() {
+    try {
+        const response = await fetch(`/api/chat/messages?last_id=${lastMessageId}`);
+        const result = await response.json();
+        
+        if (result.success && result.messages.length > 0) {
+            result.messages.forEach(msg => {
+                addMessageToChat(msg);
+            });
+            scrollToBottom();
+        }
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
+}
+
+refreshInterval = setInterval(fetchNewMessages, 3000);
+
+function replyTo(messageId, authorName, content) {
+    replyToMessageId = messageId;
+    document.getElementById('replyPreview').style.display = 'block';
+    document.getElementById('replyToName').textContent = authorName;
+    document.getElementById('replyToContent').textContent = content + '...';
+    messageInput.focus();
+}
+
+function cancelReply() {
+    replyToMessageId = null;
+    document.getElementById('replyPreview').style.display = 'none';
+}
+
+async function deleteMessage(messageId) {
+    if (!confirm('Bạn có chắc muốn xóa tin nhắn này?')) return;
+    
+    try {
+        const response = await fetch(`/api/chat/delete/${messageId}`, {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.querySelector(`[data-message-id="${messageId}"]`).remove();
+        } else {
+            alert('Lỗi: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+window.addEventListener('beforeunload', function() {
+    clearInterval(refreshInterval);
+});
+</script>
+{% endblock %}

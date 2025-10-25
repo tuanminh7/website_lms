@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="course-header">
+        <h1>{{ course.title }}</h1>
+        <p class="course-description">{{ course.description }}</p>
+        <div class="course-meta">
+            <span>👨 Giáo viên: <strong>{{ course.teacher_name }}</strong></span>
+            <span> Số bài học: <strong>{{ course.lessons|length }}</strong></span>
+            <span>✓ Đã hoàn thành: <strong>{{ completed_lessons|length }}/{{ course.lessons|length }}</strong></span>
+        </div>
+        
+        {% if is_teacher %}
+        <div class="teacher-actions">
+            <a href="/teacher/edit_course/{{ course.id }}" class="btn btn-secondary btn-small">✏️ Chỉnh sửa</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <h2> Danh sách bài học</h2>
+    
+    {% if course.lessons %}
+        {% for lesson in course.lessons %}
+        <div class="lesson-item {% if lesson.id in completed_lessons %}completed{% endif %}">
+            <div class="lesson-header">
+                <h3>
+                    {% if lesson.id in completed_lessons %}
+                    <span class="check-mark">✓</span>
+                    {% else %}
+                    <span class="lesson-number">{{ loop.index }}</span>
+                    {% endif %}
+                    {{ lesson.title }}
+                </h3>
+            </div>
+            
+            {% if lesson.video_url %}
+            <div class="video-container">
+                <iframe class="youtube-iframe" 
+                    width="100%" 
+                    height="450" 
+                    data-original-url="{{ lesson.video_url }}"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            {% endif %}
+            
+            {% if lesson.document_url %}
+            <div class="document-link">
+                <a href="{{ lesson.document_url }}" target="_blank" class="btn btn-secondary">
+                     Tải tài liệu
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if lesson.questions %}
+            <div class="questions-section">
+                <h4> Câu hỏi kiểm tra ({{ lesson.questions|length }} câu)</h4>
+                <form class="question-form" id="form_{{ lesson.id }}">
+                    {% for q in lesson.questions %}
+                    {% set question_idx = loop.index0 %}
+                    <div class="question-item">
+                        <p class="question-text"><strong>Câu {{ loop.index }}:</strong> {{ q.question }}</p>
+                        
+                        {% if q.options %}
+                        <div class="question-options">
+                            {% for opt in q.options %}
+                            <label class="option-label">
+                                <input type="radio" 
+                                       name="question_{{ lesson.id }}_{{ question_idx }}" 
+                                       value="{{ opt }}" 
+                                       required>
+                                <span>{{ opt }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <input type="text" 
+                               class="answer-input" 
+                               name="question_{{ lesson.id }}_{{ question_idx }}" 
+                               placeholder="Nhập câu trả lời của bạn..."
+                               required>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="question-actions">
+                        <button type="button" 
+                                onclick="submitAnswers('{{ course.id }}', '{{ lesson.id }}')" 
+                                class="btn btn-primary">
+                             Nộp bài
+                        </button>
+                        
+                        {% if lesson.id not in completed_lessons %}
+                        <button type="button"
+                                onclick="markComplete('{{ course.id }}', '{{ lesson.id }}')" 
+                                class="btn btn-success">
+                            ✓ Đánh dấu hoàn thành
+                        </button>
+                        {% else %}
+                        <span class="completed-badge">✓ Đã hoàn thành</span>
+                        {% endif %}
+                    </div>
+                </form>
+                
+                <div id="result_{{ lesson.id }}" class="result-section" style="display: none;"></div>
+            </div>
+            {% else %}
+            <div class="no-questions">
+                <p>Bài học này không có câu hỏi kiểm tra.</p>
+                {% if lesson.id not in completed_lessons %}
+                <button onclick="markComplete('{{ course.id }}', '{{ lesson.id }}')" 
+                        class="btn btn-success">
+                    ✓ Đánh dấu hoàn thành
+                </button>
+                {% else %}
+                <span class="completed-badge">✓ Đã hoàn thành</span>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="no-lessons">Khóa học chưa có bài học nào.</p>
+    {% endif %}
+    
+    <div class="back-link">
+        <a href="{{ url_for('courses') }}" class="btn btn-secondary">← Quay lại danh sách khóa học</a>
+    </div>
+</div>
+
+<script>
+function convertYouTubeToEmbed(url) {
+    if (!url || url.trim() === '') return '';
+    
+    url = url.trim();
+    
+    if (url.includes('/embed/')) {
+        return url;
+    }
+    
+    let videoId = '';
+    
+    try {
+        if (url.includes('youtube.com/watch')) {
+            const urlObj = new URL(url);
+            videoId = urlObj.searchParams.get('v');
+        }
+        else if (url.includes('youtu.be/')) {
+            const parts = url.split('youtu.be/')[1];
+            videoId = parts.split('?')[0].split('&')[0];
+        }
+        else if (url.includes('youtube.com/embed/')) {
+            return url;
+        }
+        
+        if (videoId) {
+            return `https://www.youtube.com/embed/${videoId}`;
+        }
+    } catch (e) {
+        console.error('Error converting YouTube URL:', e);
+    }
+    
+    return url;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const iframes = document.querySelectorAll('.youtube-iframe');
+    
+    iframes.forEach(iframe => {
+        const originalUrl = iframe.getAttribute('data-original-url');
+        if (originalUrl) {
+            const embedUrl = convertYouTubeToEmbed(originalUrl);
+            iframe.setAttribute('src', embedUrl);
+            console.log('Original:', originalUrl);
+            console.log('Converted:', embedUrl);
+        }
+    });
+});
+
+async function submitAnswers(courseId, lessonId) {
+    const form = document.getElementById(`form_${lessonId}`);
+    const formData = new FormData(form);
+    const answers = {};
+    
+    let index = 0;
+    for (let [key, value] of formData.entries()) {
+        answers[index] = value;
+        index++;
+    }
+    
+    if (Object.keys(answers).length === 0) {
+        alert('Vui lòng trả lời ít nhất một câu hỏi!');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/submit_exercise', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                course_id: courseId,
+                lesson_id: lessonId,
+                answers: answers
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const resultDiv = document.getElementById(`result_${lessonId}`);
+            resultDiv.style.display = 'block';
+            
+            if (data.score !== undefined) {
+                resultDiv.innerHTML = `
+                    <div class="result-card ${data.score >= 70 ? 'result-pass' : 'result-fail'}">
+                        <h4>Kết quả: ${data.score}%</h4>
+                        <p>Số câu đúng: <strong>${data.correct}/${data.total}</strong></p>
+                        <p>${data.score >= 70 ? '🎉 Chúc mừng! Bạn đã đạt yêu cầu.' : ' Cố gắng lên! Hãy xem lại bài học.'}</p>
+                    </div>
+                `;
+                
+                if (data.score >= 70) {
+                    await markComplete(courseId, lessonId);
+                }
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="result-card result-pass">
+                        <h4>✓ Đã nộp bài thành công!</h4>
+                        <p>Giáo viên sẽ chấm điểm sau.</p>
+                    </div>
+                `;
+            }
+            
+            form.querySelectorAll('input, button[type="button"]').forEach(el => {
+                el.disabled = true;
+            });
+        } else {
+            alert('Lỗi: ' + data.message);
+        }
+    } catch (error) {
+        alert('Có lỗi xảy ra: ' + error.message);
+        console.error(error);
+    }
+}
+
+async function markComplete(courseId, lessonId) {
+    try {
+        const response = await fetch('/update_progress', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                course_id: courseId,
+                lesson_id: lessonId,
+                completed: true
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Lỗi: ' + data.message);
+        }
+    } catch (error) {
+        alert('Có lỗi xảy ra: ' + error.message);
+        console.error(error);
+    }
+}
+</script>
+
+<style>
+.course-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.course-header h1 {
+    margin: 0 0 10px 0;
+}
+
+.course-description {
+    font-size: 16px;
+    margin-bottom: 15px;
+    opacity: 0.95;
+}
+
+.course-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.course-meta span {
+    background-color: rgba(255,255,255,0.2);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.teacher-actions {
+    margin-top: 15px;
+}
+
+.lesson-item {
+    margin: 30px 0;
+    padding: 25px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: white;
+    transition: all 0.3s;
+}
+
+.lesson-item.completed {
+    border-color: #28a745;
+    background-color: #f0fff4;
+}
+
+.lesson-header h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.check-mark {
+    color: #28a745;
+    font-size: 24px;
+}
+
+.lesson-number {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 30px;
+    font-size: 14px;
+}
+
+.video-container {
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+}
+
+.video-container iframe {
+    display: block;
+}
+
+.document-link {
+    margin: 15px 0;
+}
+
+.questions-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.questions-section h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+.question-item {
+    background: white;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+}
+
+.question-text {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.question-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.option-label:hover {
+    background-color: #f0f0f0;
+}
+
+.option-label input[type="radio"] {
+    margin-right: 10px;
+}
+
+.answer-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.question-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.result-section {
+    margin-top: 20px;
+}
+
+.result-card {
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.result-pass {
+    background-color: #d4edda;
+    border: 2px solid #28a745;
+    color: #155724;
+}
+
+.result-fail {
+    background-color: #f8d7da;
+    border: 2px solid #dc3545;
+    color: #721c24;
+}
+
+.result-card h4 {
+    margin: 0 0 10px 0;
+}
+
+.completed-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.no-lessons, .no-questions {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.back-link {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+</style>
+{% endblock %}

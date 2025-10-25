@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Đề Trắc Nghiệm{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="page-title">
+                <i class="fas fa-clipboard-list"></i> Đề Trắc Nghiệm
+            </h2>
+            <p class="page-subtitle">Chọn lớp và đề thi để bắt đầu làm bài</p>
+        </div>
+    </div>
+
+    <!-- Tabs cho các lớp -->
+    <ul class="nav nav-tabs custom-tabs mb-4" id="gradeTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="grade10-tab" data-bs-toggle="tab" data-bs-target="#grade10" type="button" role="tab">
+                <i class="fas fa-book"></i> Lớp 10
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="grade11-tab" data-bs-toggle="tab" data-bs-target="#grade11" type="button" role="tab">
+                <i class="fas fa-book"></i> Lớp 11
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="grade12-tab" data-bs-toggle="tab" data-bs-target="#grade12" type="button" role="tab">
+                <i class="fas fa-book"></i> Lớp 12
+            </button>
+        </li>
+    </ul>
+
+    <!-- Nội dung tabs -->
+    <div class="tab-content" id="gradeTabContent">
+        <!-- Lớp 10 -->
+        <div class="tab-pane fade show active" id="grade10" role="tabpanel">
+            {% if exams_by_grade['10']|length > 0 %}
+                <div class="row">
+                    {% for exam in exams_by_grade['10'] %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="exam-card h-100">
+                            <div class="card-body">
+                                <h5 class="exam-card-title">
+                                    <i class="fas fa-file-alt"></i> {{ exam.title }}
+                                </h5>
+                                <p class="exam-card-info">
+                                    <i class="fas fa-question-circle"></i> Số câu hỏi: <strong>{{ exam.questions|length }}</strong>
+                                </p>
+                                <p class="exam-card-info">
+                                    <i class="fas fa-clock"></i> Thời gian: <strong>{{ exam.time_limit }} phút</strong>
+                                </p>
+                                <a href="{{ url_for('lam_bai_tracnghiem', grade='10', exam_id=exam.id) }}" class="exam-btn w-100">
+                                    <i class="fas fa-pencil-alt"></i> Làm bài
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho lớp 10
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Lớp 11 -->
+        <div class="tab-pane fade" id="grade11" role="tabpanel">
+            {% if exams_by_grade['11']|length > 0 %}
+                <div class="row">
+                    {% for exam in exams_by_grade['11'] %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="exam-card h-100">
+                            <div class="card-body">
+                                <h5 class="exam-card-title">
+                                    <i class="fas fa-file-alt"></i> {{ exam.title }}
+                                </h5>
+                                <p class="exam-card-info">
+                                    <i class="fas fa-question-circle"></i> Số câu hỏi: <strong>{{ exam.questions|length }}</strong>
+                                </p>
+                                <p class="exam-card-info">
+                                    <i class="fas fa-clock"></i> Thời gian: <strong>{{ exam.time_limit }} phút</strong>
+                                </p>
+                                <a href="{{ url_for('lam_bai_tracnghiem', grade='11', exam_id=exam.id) }}" class="exam-btn w-100">
+                                    <i class="fas fa-pencil-alt"></i> Làm bài
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho lớp 11
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Lớp 12 -->
+        <div class="tab-pane fade" id="grade12" role="tabpanel">
+            {% if exams_by_grade['12']|length > 0 %}
+                <div class="row">
+                    {% for exam in exams_by_grade['12'] %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="exam-card h-100">
+                            <div class="card-body">
+                                <h5 class="exam-card-title">
+                                    <i class="fas fa-file-alt"></i> {{ exam.title }}
+                                </h5>
+                                <p class="exam-card-info">
+                                    <i class="fas fa-question-circle"></i> Số câu hỏi: <strong>{{ exam.questions|length }}</strong>
+                                </p>
+                                <p class="exam-card-info">
+                                    <i class="fas fa-clock"></i> Thời gian: <strong>{{ exam.time_limit }} phút</strong>
+                                </p>
+                                <a href="{{ url_for('lam_bai_tracnghiem', grade='12', exam_id=exam.id) }}" class="exam-btn w-100">
+                                    <i class="fas fa-pencil-alt"></i> Làm bài
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho lớp 12
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Nút xem lịch sử -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('lich_su_tracnghiem') }}" class="history-btn">
+                <i class="fas fa-history"></i> Xem lịch sử làm bài
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Đảm bảo Bootstrap tabs hoạt động đúng
+document.addEventListener('DOMContentLoaded', function() {
+    // Kích hoạt tất cả các tabs
+    const triggerTabList = document.querySelectorAll('#gradeTabs button[data-bs-toggle="tab"]');
+    triggerTabList.forEach(triggerEl => {
+        const tabTrigger = new bootstrap.Tab(triggerEl);
+        
+        triggerEl.addEventListener('click', event => {
+            event.preventDefault();
+            tabTrigger.show();
+        });
+    });
+});
+</script>
+
+<style>
+/* ========== COLORS ========== */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-white: #ffffff;
+    --bg-light: #f9fafb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== PAGE HEADER ========== */
+.page-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+}
+
+/* ========== CUSTOM TABS ========== */
+.custom-tabs {
+    border-bottom: 2px solid var(--border-color);
+    background: var(--bg-white);
+    border-radius: 10px 10px 0 0;
+    padding: 0.5rem 1rem 0 1rem;
+}
+
+.custom-tabs .nav-link {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 1.05rem;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+    margin: 0 0.25rem;
+    background: transparent;
+}
+
+.custom-tabs .nav-link:hover {
+    color: var(--primary-color);
+    background: var(--bg-light);
+    border-radius: 8px 8px 0 0;
+}
+
+.custom-tabs .nav-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background: var(--bg-white);
+    font-weight: 700;
+}
+
+/* ========== TAB CONTENT ========== */
+.tab-content {
+    background: var(--bg-white);
+    padding: 2rem 1rem;
+    border-radius: 0 0 10px 10px;
+    min-height: 300px;
+}
+
+/* ========== EXAM CARD ========== */
+.exam-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.exam-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.exam-card .card-body {
+    padding: 1.75rem;
+}
+
+.exam-card-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.4;
+}
+
+.exam-card-info {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.exam-card-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ========== EXAM BUTTON ========== */
+.exam-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+.exam-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    color: white;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-state {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* ========== HISTORY BUTTON ========== */
+.history-btn {
+    background: var(--bg-white);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 0.875rem 2.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.history-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.6rem;
+    }
+    
+    .custom-tabs .nav-link {
+        font-size: 0.95rem;
+        padding: 0.65rem 1rem;
+    }
+    
+    .exam-card-title {
+        font-size: 1.1rem;
+    }
+}
+</style>
+{% endblock %}

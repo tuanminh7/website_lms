@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header với countdown timer -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h3 class="exam-title">
+                <i class="fas fa-pencil-alt"></i> {{ exam.title }}
+            </h3>
+            <p class="exam-info">Số câu hỏi: {{ exam.questions|length }} | Thời gian: {{ time_limit }} phút</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="timer-box" id="timerAlert">
+                <h4 class="timer-display mb-0">
+                    <i class="fas fa-clock"></i> 
+                    <span id="countdown"></span>
+                </h4>
+                <small class="timer-label">Thời gian còn lại</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form câu hỏi -->
+    <form id="examForm">
+        {% for question in exam.questions %}
+        <div class="question-card mb-4">
+            <div class="card-body">
+                <h5 class="question-title">
+                    <span class="question-badge">Câu {{ question.number }}</span>
+                    {{ question.question }}
+                </h5>
+                
+                <div class="mt-3">
+                    {% for key, value in question.options.items() %}
+                    <div class="answer-option mb-2">
+                        <input class="form-check-input" type="radio" 
+                               name="question_{{ question.id }}" 
+                               id="q{{ question.id }}_{{ key }}" 
+                               value="{{ key }}">
+                        <label class="form-check-label" for="q{{ question.id }}_{{ key }}">
+                            <strong>{{ key }}.</strong> {{ value }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Nút nộp bài -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <button type="button" id="submitBtn" class="btn-submit px-5">
+                    <i class="fas fa-check-circle"></i> Nộp bài
+                </button>
+                <a href="{{ url_for('tracnghiem') }}" class="btn-secondary-custom px-5 ms-2">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal đã bỏ -->
+
+<script>
+// ============ BIẾN TOÀN CỤC ============
+let remainingTime = {{ remaining_time }};
+let timerInterval;
+const grade = "{{ grade }}";
+const examId = "{{ exam.id }}";
+const totalQuestions = {{ exam.questions|length }};
+
+console.log("=== EXAM INFO ===");
+console.log("Grade:", grade);
+console.log("Exam ID:", examId);
+console.log("Remaining Time:", remainingTime, "seconds");
+console.log("Total Questions:", totalQuestions);
+console.log("=================");
+
+// ============ COUNTDOWN TIMER ============
+function startTimer() {
+    timerInterval = setInterval(() => {
+        remainingTime--;
+        updateTimerDisplay();
+        
+        // Cảnh báo khi còn 5 phút
+        if (remainingTime === 300) {
+            document.getElementById('timerAlert').classList.add('timer-warning');
+            showNotification('⚠️ Chỉ còn 5 phút!', 'warning');
+        }
+        
+        // Hết giờ - tự động nộp bài
+        if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            showNotification('⏰ Hết giờ! Đang tự động nộp bài...', 'danger');
+            setTimeout(() => {
+                autoSubmit();
+            }, 1500);
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = remainingTime % 60;
+    document.getElementById('countdown').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// ============ HIỂN THỊ THÔNG BÁO ============
+function showNotification(message, type = 'info') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+    alertDiv.style.zIndex = '9999';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.appendChild(alertDiv);
+    setTimeout(() => alertDiv.remove(), 3000);
+}
+
+// ============ THU THẬP ĐÁP ÁN ============
+function collectAnswers() {
+    const answers = {};
+    
+    // Lấy tất cả radio inputs
+    const allRadios = document.querySelectorAll('input[type="radio"]');
+    
+    // Tạo Set chứa tên các câu hỏi
+    const questionNames = new Set();
+    allRadios.forEach(radio => {
+        if (radio.name.startsWith('question_')) {
+            questionNames.add(radio.name);
+        }
+    });
+    
+    console.log(`📋 Found ${questionNames.size} questions`);
+    
+    // Thu thập đáp án
+    questionNames.forEach(name => {
+        const questionId = name.replace('question_', '');
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        answers[questionId] = selected ? selected.value : '';
+        
+        if (selected) {
+            console.log(`✓ Q${questionId}: ${selected.value}`);
+        } else {
+            console.log(`✗ Q${questionId}: (chưa chọn)`);
+        }
+    });
+    
+    console.log('📦 Answers collected:', answers);
+    return answers;
+}
+
+// ============ ĐẾM SỐ CÂU CHƯA LÀM ============
+function countUnanswered() {
+    const answers = collectAnswers();
+    return Object.values(answers).filter(a => a === '').length;
+}
+
+// ============ NỘP BÀI ============
+async function submitExam() {
+    const answers = collectAnswers();
+    
+    console.log('📤 SUBMITTING EXAM');
+    console.log('Grade:', grade);
+    console.log('Exam ID:', examId);
+    console.log('Answers:', answers);
+    
+    // Disable nút nộp
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang nộp bài...';
+    
+    try {
+        const response = await fetch('/tracnghiem/nop-bai', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                grade: grade,
+                exam_id: examId,
+                answers: answers
+            })
+        });
+        
+        console.log('📥 Response Status:', response.status);
+        console.log('📥 Response OK:', response.ok);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Error Response:', errorText);
+            showNotification(`Lỗi ${response.status}: ${errorText}`, 'danger');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            return;
+        }
+        
+        const result = await response.json();
+        console.log('✅ Result:', result);
+        
+        if (result.success) {
+            // Lưu kết quả vào sessionStorage
+            sessionStorage.setItem('examResult', JSON.stringify(result));
+            
+            showNotification('✅ Nộp bài thành công!', 'success');
+            
+            // Chuyển trang sau 1 giây
+            setTimeout(() => {
+                window.location.href = `/tracnghiem/ket-qua/${grade}/${examId}`;
+            }, 1000);
+        } else {
+            showNotification(result.message || 'Có lỗi xảy ra', 'danger');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+        
+    } catch (error) {
+        console.error('❌ Fetch Error:', error);
+        showNotification('Lỗi kết nối: ' + error.message, 'danger');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+}
+
+// ============ TỰ ĐỘNG NỘP BÀI KHI HẾT GIỜ ============
+function autoSubmit() {
+    clearInterval(timerInterval);
+    document.getElementById('submitBtn').disabled = true;
+    console.log('⏰ Auto-submit triggered');
+    submitExam();
+}
+
+// ============ XỬ LÝ NÚT NỘP BÀI - NỘP LUÔN ============
+document.getElementById('submitBtn').addEventListener('click', function() {
+    console.log('🖱️ Submit button clicked - Nộp bài ngay');
+    
+    const unanswered = countUnanswered();
+    
+    if (unanswered > 0) {
+        // Chỉ cảnh báo nhanh, vẫn nộp
+        showNotification(`⚠️ Bạn còn ${unanswered} câu chưa làm`, 'warning');
+    }
+    
+    // Dừng timer
+    clearInterval(timerInterval);
+    
+    // Nộp bài ngay lập tức
+    submitExam();
+});
+
+// ============ CẢNH BÁO KHI RỜI TRANG ============
+window.addEventListener('beforeunload', function(e) {
+    if (remainingTime > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// ============ KHỞI ĐỘNG KHI LOAD TRANG ============
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("✅ Page loaded, starting timer...");
+    updateTimerDisplay(); // Hiển thị thời gian ban đầu trước
+    startTimer();
+});
+</script>
+
+<style>
+/* ========== COLORS ========== */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-white: #ffffff;
+    --bg-light: #f9fafb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== EXAM HEADER ========== */
+.exam-title {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.exam-info {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* ========== TIMER BOX ========== */
+.timer-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid var(--warning-color);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 20px;
+    z-index: 100;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.timer-box.timer-warning {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: var(--danger-color);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.timer-display {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.timer-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+/* ========== QUESTION CARD ========== */
+.question-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.question-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.question-card .card-body {
+    padding: 1.5rem;
+}
+
+.question-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.question-badge {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    color: white;
+    padding: 0.35rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    display: inline-block;
+}
+
+/* ========== ANSWER OPTIONS ========== */
+.answer-option {
+    background: var(--bg-light);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.answer-option:hover {
+    background: var(--bg-white);
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.answer-option input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.75rem;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.answer-option label {
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.6;
+    cursor: pointer;
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.form-check-input:checked ~ .form-check-label {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.answer-option:has(input:checked) {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ========== BUTTONS ========== */
+.btn-submit {
+    background: linear-gradient(135deg, var(--success-color) 0%, var(--success-hover) 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.875rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary-custom {
+    background: var(--bg-white);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.875rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-secondary-custom:hover {
+    background: var(--bg-light);
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+    transform: translateY(-2px);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .exam-title {
+        font-size: 1.5rem;
+    }
+    
+    .timer-box {
+        margin-top: 1rem;
+        position: relative;
+        top: 0;
+    }
+    
+    .question-badge {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.7rem;
+    }
+    
+    .btn-submit, .btn-secondary-custom {
+        width: 100%;
+        margin: 0.5rem 0 !important;
+    }
+}
+</style>
+{% endblock %}

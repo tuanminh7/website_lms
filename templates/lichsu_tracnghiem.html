@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch sử làm bài{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="page-title">
+                <i class="fas fa-history"></i> Lịch Sử Làm Bài Trắc Nghiệm
+            </h2>
+            <p class="page-subtitle">Xem lại các bài thi đã hoàn thành</p>
+        </div>
+    </div>
+
+    {% if results|length > 0 %}
+        <!-- Thống kê tổng quan -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="card-body">
+                        <h3 class="stat-number text-primary">{{ results|length }}</h3>
+                        <p class="stat-label">Tổng số bài</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="card-body">
+                        {% set avg_score = (results | sum(attribute='score')) / (results | length) %}
+                        <h3 class="stat-number text-success">{{ "%.2f" | format(avg_score) }}</h3>
+                        <p class="stat-label">Điểm trung bình</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="card-body">
+                        {% set max_score = results | map(attribute='score') | max %}
+                        <h3 class="stat-number text-warning">{{ max_score }}</h3>
+                        <p class="stat-label">Điểm cao nhất</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="card-body">
+                        {% set min_score = results | map(attribute='score') | min %}
+                        <h3 class="stat-number text-danger">{{ min_score }}</h3>
+                        <p class="stat-label">Điểm thấp nhất</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách -->
+        <div class="row">
+            <div class="col-12">
+                <div class="table-card">
+                    <div class="table-header">
+                        <h5 class="table-title">
+                            <i class="fas fa-list"></i> Danh Sách Các Bài Đã Làm
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table custom-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Đề thi</th>
+                                        <th scope="col">Lớp</th>
+                                        <th scope="col">Điểm</th>
+                                        <th scope="col">Số câu đúng</th>
+                                        <th scope="col">Thời gian nộp</th>
+                                        <th scope="col">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in results %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>
+                                            <strong class="exam-title-text">{{ result.exam_title }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="grade-badge">Lớp {{ result.grade }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="score-badge 
+                                                {% if result.score >= 8 %}score-excellent
+                                                {% elif result.score >= 5 %}score-good
+                                                {% else %}score-poor
+                                                {% endif %}">
+                                                {{ result.score }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ result.correct_count }}/{{ result.total_questions }}
+                                        </td>
+                                        <td>
+                                            <small class="time-text">
+                                                <i class="fas fa-clock"></i> 
+                                                {{ result.submitted_at }}
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('lam_bai_tracnghiem', grade=result.grade, exam_id=result.exam_id) }}" 
+                                               class="action-btn" 
+                                               title="Làm lại">
+                                                <i class="fas fa-redo"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biểu đồ điểm số (nếu có nhiều bài) -->
+        {% if results|length >= 3 %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h5 class="chart-title">
+                            <i class="fas fa-chart-line"></i> Biểu Đồ Tiến Bộ
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="progressChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <!-- Chưa có dữ liệu -->
+        <div class="row">
+            <div class="col-12">
+                <div class="empty-history">
+                    <i class="fas fa-info-circle empty-icon"></i>
+                    <h4 class="empty-title">Chưa có lịch sử làm bài</h4>
+                    <p class="empty-text">Bạn chưa hoàn thành bài thi nào. Hãy bắt đầu làm bài để xem kết quả!</p>
+                    <a href="{{ url_for('tracnghiem') }}" class="empty-btn">
+                        <i class="fas fa-pencil-alt"></i> Làm bài ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Nút quay lại -->
+    <div class="row mt-4 mb-5">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('tracnghiem') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách đề thi
+            </a>
+        </div>
+    </div>
+</div>
+
+{% if results|length >= 3 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    
+    // Dữ liệu từ Flask (lấy 10 bài gần nhất)
+    const results = {{ results[:10] | tojson }};
+    const labels = results.map((r, i) => `Bài ${results.length - i}`);
+    const scores = results.map(r => r.score);
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.reverse(),
+            datasets: [{
+                label: 'Điểm số',
+                data: scores.reverse(),
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Biểu đồ điểm số 10 bài gần nhất'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+
+<style>
+/* ========== COLORS ========== */
+:root {
+    --primary-color: #2563eb;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-white: #ffffff;
+    --bg-light: #f9fafb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== PAGE HEADER ========== */
+.page-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+}
+
+/* ========== STAT CARDS ========== */
+.stat-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card .card-body {
+    padding: 1.75rem 1.25rem;
+}
+
+.stat-number {
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* ========== TABLE CARD ========== */
+.table-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.table-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+    padding: 1.25rem 1.5rem;
+}
+
+.table-title {
+    color: white;
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: 0;
+}
+
+/* ========== CUSTOM TABLE ========== */
+.custom-table {
+    font-size: 0.95rem;
+}
+
+.custom-table thead {
+    background: var(--bg-light);
+}
+
+.custom-table thead th {
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+    padding: 1rem;
+}
+
+.custom-table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.custom-table tbody tr:hover {
+    background: var(--bg-light);
+    transform: scale(1.01);
+}
+
+.custom-table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.exam-title-text {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ========== BADGES ========== */
+.grade-badge {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.score-badge {
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.score-excellent {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.score-good {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.score-poor {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.time-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ========== ACTION BUTTON ========== */
+.action-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: #1d4ed8;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* ========== CHART CARD ========== */
+.chart-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.chart-header {
+    background: var(--bg-light);
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.chart-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: 0;
+}
+
+/* ========== EMPTY STATE ========== */
+.empty-history {
+    background: var(--bg-white);
+    border: 2px dashed var(--border-color);
+    border-radius: 12px;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.empty-icon {
+    color: var(--primary-color);
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.empty-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    color: var(--text-secondary);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+}
+
+.empty-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.875rem 2.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.empty-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+/* ========== BACK BUTTON ========== */
+.back-btn {
+    background: var(--bg-white);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 0.875rem 2.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.6rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %}

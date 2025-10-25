@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}Danh sách khóa học - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1> Danh sách khóa học</h1>
+        <p class="subtitle">Khám phá và tham gia các khóa học lập trình</p>
+    </div>
+    
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder=" Tìm kiếm khóa học..." onkeyup="searchCourses()">
+        <select id="sortSelect" onchange="sortCourses()">
+            <option value="default">Sắp xếp mặc định</option>
+            <option value="name-asc">Tên: A → Z</option>
+            <option value="name-desc">Tên: Z → A</option>
+            <option value="lessons-desc">Nhiều bài học nhất</option>
+            <option value="lessons-asc">Ít bài học nhất</option>
+        </select>
+    </div>
+    
+    {% if courses %}
+        <div class="courses-count">
+            <p>Tìm thấy <strong id="courseCount">{{ courses|length }}</strong> khóa học</p>
+        </div>
+        
+        <div class="courses-grid" id="coursesGrid">
+            {% for course in courses %}
+            <div class="course-card" data-name="{{ course.title|lower }}" data-lessons="{{ course.lessons|length }}">
+                <div class="course-image">
+                    <div class="course-icon"></div>
+                </div>
+                
+                <div class="course-content">
+                    <h3>{{ course.title }}</h3>
+                    <p class="course-description">{{ course.description[:120] }}{% if course.description|length > 120 %}...{% endif %}</p>
+                    
+                    <div class="course-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon"></span>
+                            <span>{{ course.teacher_name }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon"></span>
+                            <span>{{ course.lessons|length }} bài học</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-footer">
+                        <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn btn-primary btn-block">
+                            Xem chi tiết →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon"></div>
+            <h3>Chưa có khóa học nào</h3>
+            <p>Hệ thống đang được cập nhật. Vui lòng quay lại sau!</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function searchCourses() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const grid = document.getElementById('coursesGrid');
+    const cards = grid.getElementsByClassName('course-card');
+    let visibleCount = 0;
+    
+    for (let i = 0; i < cards.length; i++) {
+        const name = cards[i].getAttribute('data-name');
+        if (name.indexOf(filter) > -1) {
+            cards[i].style.display = 'block';
+            visibleCount++;
+        } else {
+            cards[i].style.display = 'none';
+        }
+    }
+    
+    document.getElementById('courseCount').textContent = visibleCount;
+}
+
+function sortCourses() {
+    const select = document.getElementById('sortSelect');
+    const sortValue = select.value;
+    const grid = document.getElementById('coursesGrid');
+    const cards = Array.from(grid.getElementsByClassName('course-card'));
+    
+    cards.sort((a, b) => {
+        switch(sortValue) {
+            case 'name-asc':
+                return a.getAttribute('data-name').localeCompare(b.getAttribute('data-name'));
+            case 'name-desc':
+                return b.getAttribute('data-name').localeCompare(a.getAttribute('data-name'));
+            case 'lessons-desc':
+                return parseInt(b.getAttribute('data-lessons')) - parseInt(a.getAttribute('data-lessons'));
+            case 'lessons-asc':
+                return parseInt(a.getAttribute('data-lessons')) - parseInt(b.getAttribute('data-lessons'));
+            default:
+                return 0;
+        }
+    });
+    
+    cards.forEach(card => grid.appendChild(card));
+}
+</script>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.subtitle {
+    color: #666;
+    margin: 0;
+}
+
+.filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+#searchInput {
+    flex: 1;
+    min-width: 250px;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+#sortSelect {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: white;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+#sortSelect:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.courses-count {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.courses-count strong {
+    color: #007bff;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.course-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.course-image {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px;
+    text-align: center;
+}
+
+.course-icon {
+    font-size: 60px;
+}
+
+.course-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-content h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.course-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.course-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 14px;
+}
+
+.meta-icon {
+    font-size: 18px;
+}
+
+.course-footer {
+    margin-top: auto;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        flex-direction: column;
+    }
+    
+    #searchInput,
+    #sortSelect {
+        width: 100%;
+        min-width: auto;
+    }
+}
+</style>
+{% endblock %}

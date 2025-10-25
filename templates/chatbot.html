@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot AI - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header-section">
+        <h1 class="main-title">Chatbot AI</h1>
+        <p class="subtitle">Trợ lý học tập Tin học THPT</p>
+        <div class="subtitle-underline"></div>
+    </div>
+
+    <div class="chatbot-container">
+        <div class="chat-wrapper">
+            <div class="chat-box" id="chatBox">
+                <div class="message bot-message">
+                    <div class="message-header">AI Assistant</div>
+                    <div class="message-content">
+                        <p>Xin chào! Tôi là trợ lý AI. Bạn có thể hỏi tôi bất kỳ câu hỏi nào về Tin học THPT.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <form id="chatForm" onsubmit="sendMessage(event)">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Nhập câu hỏi của bạn..." 
+                        autocomplete="off"
+                        required
+                    >
+                    <button type="submit" class="btn btn-primary">Gửi</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="suggestions">
+            <div class="suggestions-header">Gợi ý câu hỏi</div>
+            <div class="suggestions-grid">
+                <button onclick="quickQuestion('Giải thích vòng lặp for trong Python')" class="suggestion-btn">
+                    <span class="suggestion-text">Vòng lặp for trong Python</span>
+                </button>
+                <button onclick="quickQuestion('Sự khác biệt giữa list và tuple')" class="suggestion-btn">
+                    <span class="suggestion-text">List vs Tuple</span>
+                </button>
+                <button onclick="quickQuestion('Cấu trúc dữ liệu Stack là gì?')" class="suggestion-btn">
+                    <span class="suggestion-text">Stack là gì?</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function sendMessage(event) {
+    event.preventDefault();
+    
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    addMessage(message, 'user');
+    input.value = '';
+    
+    const loadingId = addMessage('Đang suy nghĩ...', 'bot', true);
+    
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: message})
+        });
+        
+        const data = await response.json();
+        
+        removeMessage(loadingId);
+        addMessage(data.response, 'bot');
+        
+    } catch (error) {
+        removeMessage(loadingId);
+        addMessage('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại!', 'bot');
+        console.error('Error:', error);
+    }
+}
+
+function addMessage(text, sender, isLoading = false) {
+    const chatBox = document.getElementById('chatBox');
+    const messageDiv = document.createElement('div');
+    const messageId = 'msg-' + Date.now();
+    
+    messageDiv.id = messageId;
+    messageDiv.className = `message ${sender}-message ${isLoading ? 'loading' : ''}`;
+    
+    if (sender === 'user') {
+        messageDiv.innerHTML = `<div class="message-header">Bạn</div><div class="message-content"><p>${text}</p></div>`;
+    } else {
+        messageDiv.innerHTML = `<div class="message-header">AI Assistant</div><div class="message-content"><p>${text}</p></div>`;
+    }
+    
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    
+    return messageId;
+}
+
+function removeMessage(messageId) {
+    const message = document.getElementById(messageId);
+    if (message) {
+        message.remove();
+    }
+}
+
+function quickQuestion(question) {
+    document.getElementById('messageInput').value = question;
+    document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+}
+</script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.header-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.main-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.subtitle-underline {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.chatbot-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.chat-wrapper {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.chat-box {
+    padding: 30px;
+    height: 650px;
+    overflow-y: auto;
+    background: linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%);
+}
+
+.chat-box::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+}
+
+.message {
+    margin-bottom: 25px;
+    animation: fadeIn 0.3s ease-in;
+    max-width: 75%;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-header {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    opacity: 0.7;
+}
+
+.message-content {
+    padding: 16px 20px;
+    border-radius: 18px;
+    line-height: 1.6;
+}
+
+.message-content p {
+    margin: 0;
+}
+
+.user-message {
+    margin-left: auto;
+    text-align: right;
+}
+
+.user-message .message-header {
+    color: #667eea;
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.bot-message {
+    margin-right: auto;
+}
+
+.bot-message .message-header {
+    color: #374151;
+}
+
+.bot-message .message-content {
+    background: white;
+    color: #1f2937;
+    border: 2px solid #e5e7eb;
+    border-radius: 18px 18px 18px 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.loading {
+    opacity: 0.6;
+}
+
+.loading .message-content {
+    position: relative;
+}
+
+.loading .message-content::after {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #667eea;
+    animation: pulse 1.5s infinite;
+    margin-left: 5px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.chat-input-container {
+    padding: 25px 30px;
+    background: white;
+    border-top: 2px solid #f3f4f6;
+}
+
+.chat-input-container form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.chat-input-container input {
+    flex: 1;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.chat-input-container input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-primary {
+    padding: 16px 35px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.suggestions {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.suggestions-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.suggestion-btn {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.suggestion-text {
+    color: #374151;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: block;
+}
+
+.suggestion-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.suggestion-btn:hover .suggestion-text {
+    color: white;
+}
+
+.suggestion-btn:active {
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+
+    .header-section {
+        margin-bottom: 20px;
+    }
+
+    .main-title {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.85rem;
+    }
+
+    .subtitle-underline {
+        width: 50px;
+        height: 2px;
+    }
+    
+    .chat-box {
+        height: calc(100vh - 420px);
+        min-height: 400px;
+        padding: 20px 15px;
+    }
+    
+    .message {
+        max-width: 90%;
+        margin-bottom: 20px;
+    }
+
+    .message-header {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+
+    .message-content {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+    
+    .suggestions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .suggestions {
+        padding: 20px 15px;
+    }
+
+    .suggestions-header {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .suggestion-btn {
+        padding: 14px 16px;
+    }
+
+    .suggestion-text {
+        font-size: 0.9rem;
+    }
+    
+    .chat-input-container {
+        padding: 20px 15px;
+    }
+
+    .chat-input-container input {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+    }
+    
+    .btn-primary {
+        padding: 14px 28px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .chat-box {
+        height: 600px;
+    }
+
+    .main-title {
+        font-size: 1.6rem;
+    }
+}
+</style>
+{% endblock %}

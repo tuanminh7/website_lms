@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}Kho tài liệu - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Kho tài liệu học tập</h1>
+        <p class="subtitle">Tài liệu, bài giảng và đề thi theo từng lớp</p>
+        
+        {% if session.role == 'teacher' %}
+        <a href="{{ url_for('add_document') }}" class="btn btn-primary">+ Thêm tài liệu mới</a>
+        {% endif %}
+    </div>
+
+    <!-- PHẦN MỚI: Bộ lọc theo lớp -->
+    <div class="grade-filters">
+        <button class="grade-btn {% if current_grade == 'all' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade='all', type=current_type) }}'">
+            Tất cả lớp
+        </button>
+        <button class="grade-btn {% if current_grade == '10' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade='10', type=current_type) }}'">
+            Lớp 10
+        </button>
+        <button class="grade-btn {% if current_grade == '11' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade='11', type=current_type) }}'">
+            Lớp 11
+        </button>
+        <button class="grade-btn {% if current_grade == '12' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade='12', type=current_type) }}'">
+            Lớp 12
+        </button>
+    </div>
+
+    <!-- PHẦN MỚI: Bộ lọc theo loại tài liệu -->
+    <div class="type-filters">
+        <button class="type-btn {% if current_type == 'all' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade=current_grade, type='all') }}'">
+            Tất cả
+        </button>
+        <button class="type-btn {% if current_type == 'document' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade=current_grade, type='document') }}'">
+            Tài liệu
+        </button>
+        <button class="type-btn {% if current_type == 'lecture' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade=current_grade, type='lecture') }}'">
+            Bài giảng
+        </button>
+        <button class="type-btn {% if current_type == 'exam' %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade=current_grade, type='exam') }}'">
+            Bộ đề thi
+        </button>
+    </div>
+
+    <!-- PHẦN MỚI: Hiển thị tài liệu theo từng lớp -->
+    {% if current_grade == 'all' %}
+        <!-- Hiển thị theo lớp khi chọn "Tất cả lớp" -->
+        {% for grade, docs in docs_by_grade.items() %}
+            {% if docs %}
+            <div class="grade-section">
+                <h2 class="grade-title">Lớp {{ grade }}</h2>
+                <div class="documents-grid">
+                    {% for doc in docs %}
+                    <!-- CẬP NHẬT: Hiển thị thông tin tài liệu với các trường mới -->
+                    <div class="document-card">
+                        <div class="doc-header">
+                            <!-- Hiển thị loại tài liệu -->
+                            <span class="doc-type-badge {{ doc.doc_type }}">
+                                {% if doc.doc_type == 'document' %}Tài liệu
+                                {% elif doc.doc_type == 'lecture' %}Bài giảng
+                                {% elif doc.doc_type == 'exam' %}Đề thi
+                                {% else %}Khác{% endif %}
+                            </span>
+                            <span class="doc-grade-badge">Lớp {{ doc.grade }}</span>
+                        </div>
+                        
+                        <h3>{{ doc.title }}</h3>
+                        <p class="doc-description">{{ doc.description or 'Không có mô tả' }}</p>
+                        
+                        <div class="doc-meta">
+                            <!-- Hiển thị loại link -->
+                            <span class="link-type">
+                                {% if doc.link_type == 'youtube' %}YouTube
+                                {% elif doc.link_type == 'drive' %}Google Drive
+                                {% else %}Link{% endif %}
+                            </span>
+                            <span class="doc-date">{{ doc.created_at[:10] if doc.created_at else 'N/A' }}</span>
+                        </div>
+                        
+                        <!-- Nút xem/tải tài liệu -->
+                        <a href="{{ doc.url }}" target="_blank" class="btn btn-primary btn-block">
+                            {% if doc.link_type == 'youtube' %}Xem video
+                            {% elif doc.link_type == 'drive' %}Tải tài liệu
+                            {% else %}Xem tài liệu{% endif %}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <!-- Hiển thị tài liệu của lớp được chọn -->
+        {% set selected_docs = docs_by_grade.get(current_grade, []) %}
+        {% if selected_docs %}
+        <div class="documents-grid">
+            {% for doc in selected_docs %}
+            <!-- CẬP NHẬT: Tương tự như trên -->
+            <div class="document-card">
+                <div class="doc-header">
+                    <span class="doc-type-badge {{ doc.doc_type }}">
+                        {% if doc.doc_type == 'document' %}Tài liệu
+                        {% elif doc.doc_type == 'lecture' %}Bài giảng
+                        {% elif doc.doc_type == 'exam' %}Đề thi
+                        {% else %}Khác{% endif %}
+                    </span>
+                    <span class="doc-grade-badge">Lớp {{ doc.grade }}</span>
+                </div>
+                
+                <h3>{{ doc.title }}</h3>
+                <p class="doc-description">{{ doc.description or 'Không có mô tả' }}</p>
+                
+                <div class="doc-meta">
+                    <span class="link-type">
+                        {% if doc.link_type == 'youtube' %}YouTube
+                        {% elif doc.link_type == 'drive' %}Google Drive
+                        {% else %}Link{% endif %}
+                    </span>
+                    <span class="doc-date">{{ doc.created_at[:10] if doc.created_at else 'N/A' }}</span>
+                </div>
+                
+                <a href="{{ doc.url }}" target="_blank" class="btn btn-primary btn-block">
+                    {% if doc.link_type == 'youtube' %}Xem video
+                    {% elif doc.link_type == 'drive' %}Tải tài liệu
+                    {% else %}Xem tài liệu{% endif %}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Trạng thái trống khi không có tài liệu -->
+        <div class="empty-state">
+            <h3>Chưa có tài liệu nào</h3>
+            <p>Chưa có tài liệu cho lớp {{ current_grade }} trong danh mục này.</p>
+            {% if session.role == 'teacher' %}
+            <a href="{{ url_for('add_document') }}" class="btn btn-primary">Thêm tài liệu đầu tiên</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+
+<style>
+/* CSS CHO PHẦN LỚP HỌC */
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* STYLE MỚI: Bộ lọc theo lớp */
+.grade-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.grade-btn {
+    padding: 12px 30px;
+    border: 2px solid #007bff;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 15px;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.grade-btn:hover {
+    background: #007bff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.grade-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+/* STYLE MỚI: Bộ lọc theo loại tài liệu */
+.type-filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.type-btn {
+    padding: 8px 20px;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.type-btn:hover {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.type-btn.active {
+    background: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+
+/* STYLE MỚI: Phần chia theo lớp */
+.grade-section {
+    margin-bottom: 50px;
+}
+
+.grade-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #007bff;
+}
+
+/* CẬP NHẬT: Grid hiển thị tài liệu */
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.document-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.document-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+/* STYLE MỚI: Header của card với badges */
+.doc-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+/* STYLE MỚI: Badge loại tài liệu */
+.doc-type-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.doc-type-badge.document {
+    background: #17a2b820;
+    color: #17a2b8;
+}
+
+.doc-type-badge.lecture {
+    background: #28a74520;
+    color: #28a745;
+}
+
+.doc-type-badge.exam {
+    background: #dc354520;
+    color: #dc3545;
+}
+
+/* STYLE MỚI: Badge lớp học */
+.doc-grade-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #007bff20;
+    color: #007bff;
+}
+
+.document-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+    min-height: 50px;
+}
+
+.doc-description {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+    flex-grow: 1;
+    min-height: 40px;
+}
+
+/* CẬP NHẬT: Meta info với loại link */
+.doc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.link-type {
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #6c757d20;
+    color: #6c757d;
+}
+
+.doc-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.btn-block {
+    width: 100%;
+    text-align: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #ddd;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Responsive cho bộ lọc */
+    .grade-filters, .type-filters {
+        flex-direction: column;
+    }
+    
+    .grade-btn, .type-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

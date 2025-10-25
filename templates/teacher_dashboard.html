@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Giáo viên - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container dashboard">
+    <div class="welcome-section">
+        <h1>Chào mừng, Giáo viên {{ username }}! </h1>
+        <p class="subtitle">Quản lý khóa học và theo dõi tiến độ học sinh</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"></div>
+            <h3>{{ courses|length }}</h3>
+            <p>Khóa học của bạn</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"></div>
+            <h3>{{ courses|sum(attribute='students_enrolled') }}</h3>
+            <p>Tổng học sinh</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"></div>
+            <h3>{{ courses|sum(attribute='total_lessons') }}</h3>
+            <p>Tổng bài học</p>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"></div>
+            <h3>{{ courses|selectattr('students_enrolled', 'greaterthan', 0)|list|length }}</h3>
+            <p>Khóa đang hoạt động</p>
+        </div>
+    </div>
+
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2> Khóa học của bạn</h2>
+            <a href="{{ url_for('create_course') }}" class="btn btn-primary">
+                ➕ Tạo khóa học mới
+            </a>
+        </div>
+
+        {% if courses %}
+        <div class="courses-grid">
+            {% for item in courses %}
+            <div class="course-card">
+                <div class="course-status">
+                    {% if item.students_enrolled > 0 %}
+                    <span class="status-badge active">Đang hoạt động</span>
+                    {% else %}
+                    <span class="status-badge inactive">Chưa có học sinh</span>
+                    {% endif %}
+                </div>
+                
+                <h3>{{ item.course.title }}</h3>
+                <p class="course-description">{{ item.course.description[:100] }}{% if item.course.description|length > 100 %}...{% endif %}</p>
+                
+                <div class="course-stats">
+                    <div class="stat-item">
+                        <span class="stat-icon-small"></span>
+                        <span>{{ item.total_lessons }} bài học</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-icon-small">👥</span>
+                        <span>{{ item.students_enrolled }} học sinh</span>
+                    </div>
+                </div>
+                
+                <div class="course-actions">
+                    <a href="{{ url_for('course_detail', course_id=item.course.id) }}" class="btn btn-outline btn-small">
+                         Xem
+                    </a>
+                    <a href="{{ url_for('edit_course', course_id=item.course.id) }}" class="btn btn-secondary btn-small">
+                         Sửa
+                    </a>
+                    <button onclick="deleteCourse('{{ item.course.id }}', '{{ item.course.title }}')" class="btn btn-danger btn-small">
+                         Xóa
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon"></div>
+            <h3>Bạn chưa tạo khóa học nào</h3>
+            <p>Hãy tạo khóa học đầu tiên để bắt đầu giảng dạy!</p>
+            <a href="{{ url_for('create_course') }}" class="btn btn-primary btn-large">
+                ➕ Tạo khóa học đầu tiên
+            </a>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2> Quản lý học sinh</h2>
+        </div>
+        
+        <div class="management-grid">
+            <a href="{{ url_for('students_progress') }}" class="management-card">
+                <div class="management-icon"></div>
+                <h4>Tiến độ học sinh</h4>
+                <p>Xem chi tiết tiến độ học tập của từng học sinh</p>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="{{ url_for('view_submissions') }}" class="management-card">
+                <div class="management-icon"></div>
+                <h4>Bài nộp</h4>
+                <p>Xem và chấm điểm bài tập học sinh đã nộp</p>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="{{ url_for('add_document') }}" class="management-card">
+                <div class="management-icon">📁</div>
+                <h4>Thêm tài liệu</h4>
+                <p>Tải lên video và tài liệu học tập mới</p>
+                <span class="arrow">→</span>
+            </a>
+            
+            <a href="{{ url_for('import_exam') }}" class="management-card">
+                <div class="management-icon">📝</div>
+                <h4>Import đề thi</h4>
+                <p>Tạo nhanh đề trắc nghiệm từ file Word chuẩn hóa</p>
+                <span class="arrow">→</span>
+            </a>
+        </div>
+    </section>
+</div>
+
+<script>
+async function deleteCourse(courseId, courseTitle) {
+    if (!confirm(`Bạn có chắc muốn xóa khóa học "${courseTitle}"?\n\nHành động này không thể hoàn tác!`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/teacher/delete_course/${courseId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✓ Xóa khóa học thành công!');
+            location.reload();
+        } else {
+            alert('✗ Lỗi: ' + data.message);
+        }
+    } catch (error) {
+        alert('✗ Có lỗi xảy ra: ' + error.message);
+        console.error(error);
+    }
+}
+</script>
+
+<style>
+.dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.welcome-section {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.welcome-section h1 {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    color: #333;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 16px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card:nth-child(2) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stat-card:nth-child(3) {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-card:nth-child(4) {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stat-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.stat-card h3 {
+    margin: 10px 0 5px 0;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.stat-card p {
+    margin: 0;
+    opacity: 0.95;
+    font-size: 14px;
+}
+
+.dashboard-section {
+    margin-bottom: 50px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    margin: 0;
+    color: #333;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.course-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.course-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+}
+
+.course-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.active {
+    background: #d4edda;
+    color: #28a745;
+}
+
+.status-badge.inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.course-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+    min-height: 50px;
+}
+
+.course-description {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+    min-height: 60px;
+}
+
+.course-stats {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 15px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.stat-icon-small {
+    font-size: 18px;
+}
+
+.course-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.management-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.management-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 25px;
+    text-decoration: none;
+    transition: all 0.3s;
+    position: relative;
+    display: block;
+}
+
+.management-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+}
+
+.management-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.management-card h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.management-card p {
+    color: #666;
+    font-size: 14px;
+    margin: 0 0 15px 0;
+}
+
+.management-card .arrow {
+    color: #007bff;
+    font-size: 24px;
+    position: absolute;
+    bottom: 20px;
+    right: 25px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #ddd;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.empty-state p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: #007bff;
+    border: 2px solid #007bff;
+}
+
+.btn-outline:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-large {
+    padding: 12px 30px;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .management-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .course-actions {
+        flex-wrap: wrap;
+    }
+}
+</style>
+{% endblock %}

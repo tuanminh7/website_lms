@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}Tiến độ học sinh - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1> Tiến độ học sinh</h1>
+        <p class="subtitle">Theo dõi tiến độ học tập của học sinh trong các khóa học</p>
+    </div>
+    
+    {% if progress %}
+        <div class="progress-summary">
+            <div class="summary-card">
+                <h3>{{ progress|length }}</h3>
+                <p>Tổng số học sinh</p>
+            </div>
+            <div class="summary-card">
+                <h3>{{ progress|selectattr('percentage', 'equalto', 100)|list|length }}</h3>
+                <p>Đã hoàn thành</p>
+            </div>
+            <div class="summary-card">
+                <h3>{{ progress|selectattr('percentage', 'greaterthan', 0)|selectattr('percentage', 'lessthan', 100)|list|length }}</h3>
+                <p>Đang học</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="progress-table">
+                <thead>
+                    <tr>
+                        <th>Học sinh</th>
+                        <th>Email</th>
+                        <th>Khóa học</th>
+                        <th>Tiến độ</th>
+                        <th>Bài học</th>
+                        <th>Cập nhật lần cuối</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in progress %}
+                    <tr>
+                        <td>
+                            <div class="student-info">
+                                <div class="avatar">{{ p.student_name[0]|upper }}</div>
+                                <strong>{{ p.student_name }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ p.student_email }}</td>
+                        <td>{{ p.course_title }}</td>
+                        <td>
+                            <div class="progress-cell">
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: {{ p.percentage }}%"></div>
+                                </div>
+                                <span class="percentage-text">{{ p.percentage }}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="lesson-badge">
+                                {{ p.completed }}/{{ p.total }}
+                            </span>
+                        </td>
+                        <td class="date-cell">{{ p.last_updated[:19] if p.last_updated else 'Chưa cập nhật' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon"></div>
+            <h3>Chưa có dữ liệu tiến độ</h3>
+            <p>Học sinh chưa bắt đầu học khóa học nào của bạn.</p>
+        </div>
+    {% endif %}
+    
+    <div class="back-link">
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">← Quay lại Dashboard</a>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.subtitle {
+    color: #666;
+    margin: 0;
+}
+
+.progress-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.summary-card:nth-child(2) {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.summary-card:nth-child(3) {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.summary-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.summary-card p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.table-container {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.progress-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.progress-table thead {
+    background: #f8f9fa;
+}
+
+.progress-table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 14px;
+}
+
+.progress-table td {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.progress-table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.progress-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar-small {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 100px;
+}
+
+.progress-fill-small {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+
+.percentage-text {
+    font-weight: 600;
+    color: #667eea;
+    min-width: 45px;
+}
+
+.lesson-badge {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.date-cell {
+    color: #666;
+    font-size: 13px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 12px;
+    border: 2px dashed #ddd;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+}
+
+.empty-state p {
+    color: #666;
+    margin: 0;
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .progress-table {
+        min-width: 800px;
+    }
+    
+    .progress-summary {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,548 @@
+{% extends "base.html" %}
+
+{% block title %}Kết quả bài làm{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h2 class="result-title"><i class="fas fa-chart-bar"></i> Kết Quả Bài Làm</h2>
+            <p class="result-subtitle">{{ result.exam_title }}</p>
+        </div>
+    </div>
+
+    <!-- Thông tin điểm -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="result-card h-100">
+                <div class="card-body">
+                    <h1 class="score-display 
+                        {% if result.score >= 8 %}text-success
+                        {% elif result.score >= 5 %}text-warning
+                        {% else %}text-danger
+                        {% endif %}">{{ result.score }}</h1>
+                    <h5 class="card-title-text">Điểm số</h5>
+                    <p class="card-subtitle-text">Thang điểm 10</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="result-card h-100">
+                <div class="card-body">
+                    <h1 class="score-display text-success">{{ result.correct_count }}</h1>
+                    <h5 class="card-title-text">Câu đúng</h5>
+                    <p class="card-subtitle-text">/ {{ result.total_questions }} câu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="result-card h-100">
+                <div class="card-body">
+                    <h1 class="score-display text-danger">{{ result.total_questions - result.correct_count }}</h1>
+                    <h5 class="card-title-text">Câu sai</h5>
+                    <p class="card-subtitle-text">/ {{ result.total_questions }} câu</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tỷ lệ đúng -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="progress-card">
+                <div class="card-body">
+                    <h5 class="progress-title"><i class="fas fa-chart-line"></i> Tỷ lệ đúng</h5>
+                    {% set percentage = (result.correct_count / result.total_questions * 100) | round(1) %}
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill 
+                            {% if percentage >= 80 %}bg-success
+                            {% elif percentage >= 50 %}bg-warning
+                            {% else %}bg-danger
+                            {% endif %}" 
+                            style="width: {{ percentage }}%">
+                            <strong>{{ percentage }}%</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi tiết câu sai -->
+    <div class="row mb-4" id="wrongAnswersSection">
+        <div class="col-12">
+            <div class="wrong-answers-card">
+                <div class="wrong-header" id="toggleWrongAnswers">
+                    <h5 class="wrong-title"><i class="fas fa-times-circle"></i> Chi Tiết Câu Sai</h5>
+                    <span class="wrong-badge" id="wrongCountBadge">0</span>
+                </div>
+                <div class="card-body" id="wrongAnswersList">
+                    <div class="text-center py-3" id="loadingSpinner">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 text-muted">Đang tải chi tiết...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nhận xét -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="feedback-card">
+                <div class="card-body text-center">
+                    {% if result.score >= 8 %}
+                        <h4 class="feedback-title text-success"><i class="fas fa-trophy"></i> Xuất sắc!</h4>
+                        <p class="feedback-text">Bạn đã làm bài rất tốt. Hãy tiếp tục phát huy!</p>
+                    {% elif result.score >= 5 %}
+                        <h4 class="feedback-title text-warning"><i class="fas fa-star"></i> Khá tốt!</h4>
+                        <p class="feedback-text">Bạn đã nắm được phần lớn kiến thức. Hãy ôn tập thêm để đạt điểm cao hơn!</p>
+                    {% else %}
+                        <h4 class="feedback-title text-danger"><i class="fas fa-book"></i> Cần cố gắng thêm!</h4>
+                        <p class="feedback-text">Hãy ôn tập kỹ hơn và thử lại nhé!</p>
+                    {% endif %}
+                    <p class="feedback-time">
+                        <i class="fas fa-calendar-alt"></i> Thời gian nộp bài: {{ result.submitted_at }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút hành động -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <a href="{{ url_for('reset_exam_session', grade=result.grade, exam_id=result.exam_id) }}" 
+               class="btn-action btn-warning-custom nav-link-btn">
+                <i class="fas fa-redo"></i> Làm lại bài này
+            </a>
+            <a href="{{ url_for('tracnghiem') }}" class="btn-action btn-primary-custom nav-link-btn">
+                <i class="fas fa-list"></i> Danh sách đề thi
+            </a>
+            <a href="{{ url_for('lich_su_tracnghiem') }}" class="btn-action btn-secondary-custom nav-link-btn">
+                <i class="fas fa-history"></i> Lịch sử làm bài
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wrongAnswersList = document.getElementById('wrongAnswersList');
+    const spinner = document.getElementById('loadingSpinner');
+    const wrongCountBadge = document.getElementById('wrongCountBadge');
+    const toggleHeader = document.getElementById('toggleWrongAnswers');
+
+    const sessionResult = sessionStorage.getItem('examResult');
+
+    if (sessionResult) {
+        try {
+            const result = JSON.parse(sessionResult);
+            displayWrongAnswers(result.wrong_answers);
+        } catch (e) {
+            console.error('❌ Lỗi đọc sessionStorage:', e);
+            showNoWrongAnswers();
+        }
+    } else {
+        showNoWrongAnswers();
+    }
+
+    function displayWrongAnswers(wrongAnswers) {
+        spinner.style.display = 'none';
+        wrongCountBadge.textContent = wrongAnswers ? wrongAnswers.length : 0;
+
+        if (!wrongAnswers || wrongAnswers.length === 0) {
+            wrongAnswersList.innerHTML = `
+                <div class="alert-success-custom">
+                    <i class="fas fa-check-circle success-icon"></i>
+                    <h5>🎉 Tuyệt vời!</h5>
+                    <p class="mb-0">Bạn đã làm đúng tất cả các câu!</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        wrongAnswers.forEach(item => {
+            html += `
+                <div class="wrong-item">
+                    <h6 class="wrong-question"><strong>Câu ${item.question_number}:</strong> ${item.question_text}</h6>
+                    <hr class="divider">
+                    <p class="answer-line"><i class="fas fa-times text-danger"></i> 
+                        <strong>Đáp án của bạn:</strong> 
+                        <span class="answer-badge wrong-answer">${item.user_answer}</span></p>
+                    <p class="answer-line"><i class="fas fa-check text-success"></i> 
+                        <strong>Đáp án đúng:</strong> 
+                        <span class="answer-badge correct-answer">${item.correct_answer}</span></p>
+                    ${item.explanation ? `<hr class="divider"><p class="explanation-text">
+                        <i class="fas fa-lightbulb"></i> 
+                        <strong>Giải thích:</strong> ${item.explanation}</p>` : ''}
+                </div>`;
+        });
+        wrongAnswersList.innerHTML = html;
+    }
+
+    function showNoWrongAnswers() {
+        spinner.style.display = 'none';
+        wrongAnswersList.innerHTML = `
+            <div class="alert-info-custom">
+                <i class="fas fa-info-circle"></i> Không có thông tin chi tiết câu sai
+            </div>`;
+        wrongCountBadge.textContent = "0";
+    }
+
+    // 👉 Toggle mở/đóng danh sách chi tiết câu sai
+    toggleHeader.addEventListener('click', function() {
+        wrongAnswersList.classList.toggle('show');
+    });
+});
+
+// 🗑️ Xóa sessionStorage khi rời trang
+document.querySelectorAll('.nav-link-btn').forEach(link => {
+    link.addEventListener('click', () => {
+        sessionStorage.removeItem('examResult');
+        console.log('🗑️ Cleared sessionStorage khi rời trang');
+    });
+});
+</script>
+
+<style>
+/* ========== COLORS ========== */
+:root {
+    --primary-color: #2563eb;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-white: #ffffff;
+    --bg-light: #f9fafb;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== PAGE HEADER ========== */
+.result-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.result-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+
+/* ========== RESULT CARDS ========== */
+.result-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.result-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.result-card .card-body {
+    padding: 2rem 1.5rem;
+}
+
+.score-display {
+    font-weight: 700;
+    font-size: 3.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-title-text {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-subtitle-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* ========== PROGRESS CARD ========== */
+.progress-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.progress-card .card-body {
+    padding: 1.75rem;
+}
+
+.progress-title {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1.25rem;
+}
+
+.progress-bar-container {
+    height: 40px;
+    background: var(--bg-light);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 1s ease;
+    font-size: 1rem;
+    color: white;
+}
+
+.progress-bar-fill.bg-success {
+    background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+}
+
+.progress-bar-fill.bg-warning {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+}
+
+.progress-bar-fill.bg-danger {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+}
+
+/* ========== WRONG ANSWERS CARD ========== */
+.wrong-answers-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.wrong-header {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.wrong-header:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.wrong-title {
+    color: white;
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: 0;
+}
+
+.wrong-badge {
+    background: white;
+    color: var(--danger-color);
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+#wrongAnswersList {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.3s ease;
+    padding: 0;
+}
+
+#wrongAnswersList.show {
+    max-height: 3000px;
+    padding: 1.5rem;
+}
+
+/* ========== WRONG ITEM ========== */
+.wrong-item {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.wrong-item:last-child {
+    margin-bottom: 0;
+}
+
+.wrong-question {
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+}
+
+.divider {
+    margin: 0.75rem 0;
+    border-color: var(--border-color);
+}
+
+.answer-line {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.answer-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.wrong-answer {
+    background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+    color: white;
+}
+
+.correct-answer {
+    background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+    color: white;
+}
+
+.explanation-text {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+/* ========== ALERT CUSTOM ========== */
+.alert-success-custom {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 2px solid var(--success-color);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    color: #065f46;
+}
+
+.success-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.alert-info-custom {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* ========== FEEDBACK CARD ========== */
+.feedback-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.feedback-card .card-body {
+    padding: 2rem;
+}
+
+.feedback-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.feedback-text {
+    color: var(--text-primary);
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+}
+
+.feedback-time {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* ========== ACTION BUTTONS ========== */
+.btn-action {
+    border: none;
+    border-radius: 10px;
+    padding: 0.875rem 2rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+}
+
+.btn-warning-custom {
+    background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+    color: white;
+}
+
+.btn-warning-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    color: white;
+}
+
+.btn-secondary-custom {
+    background: var(--bg-white);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+}
+
+.btn-secondary-custom:hover {
+    background: var(--bg-light);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    transform: translateY(-2px);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .result-title {
+        font-size: 1.6rem;
+    }
+    
+    .score-display {
+        font-size: 2.5rem;
+    }
+    
+    .btn-action {
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+}
+</style>
+{% endblock %}

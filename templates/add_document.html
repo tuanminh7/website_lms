@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm tài liệu - Học Tin THPT{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Thêm tài liệu mới</h1>
+    <p class="subtitle">Thêm video YouTube hoặc tài liệu Google Drive</p>
+
+    <form id="addDocumentForm">
+        <div class="form-group">
+            <label for="docTitle">Tiêu đề tài liệu: <span class="required">*</span></label>
+            <input type="text" id="docTitle" placeholder="VD: Giới thiệu Python cơ bản" required>
+        </div>
+
+        <div class="form-group">
+            <label for="docUrl">Link tài liệu: <span class="required">*</span></label>
+            <input type="url" id="docUrl" placeholder="https://youtube.com/... hoặc https://drive.google.com/..." required>
+            <small class="form-hint">Hỗ trợ: YouTube, Google Drive, hoặc link trực tiếp</small>
+        </div>
+
+        <div class="form-group">
+            <label for="docType">Loại tài liệu:</label>
+            <select id="docType">
+                <option value="auto">Tự động nhận diện</option>
+                <option value="youtube">Video YouTube</option>
+                <option value="drive">Google Drive</option>
+                <option value="pdf">File PDF</option>
+                <option value="other">Khác</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="docDescription">Mô tả:</label>
+            <textarea id="docDescription" rows="4" placeholder="Mô tả ngắn gọn về nội dung tài liệu..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="docCategory">Chủ đề:</label>
+            <select id="docCategory">
+                <option value="">Chọn chủ đề</option>
+                <option value="python">Python</option>
+                <option value="algorithm">Thuật toán</option>
+                <option value="data-structure">Cấu trúc dữ liệu</option>
+                <option value="oop">Lập trình hướng đối tượng</option>
+                <option value="web">Lập trình Web</option>
+                <option value="database">Cơ sở dữ liệu</option>
+                <option value="other">Khác</option>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">✓ Thêm tài liệu</button>
+            <a href="{{ url_for('documents') }}" class="btn btn-secondary">← Hủy</a>
+        </div>
+    </form>
+
+    <div class="preview-section" id="previewSection" style="display: none;">
+        <h3>Xem trước:</h3>
+        <div id="previewContent"></div>
+    </div>
+</div>
+
+<script>
+const urlInput = document.getElementById('docUrl');
+const typeSelect = document.getElementById('docType');
+const previewSection = document.getElementById('previewSection');
+const previewContent = document.getElementById('previewContent');
+
+urlInput.addEventListener('input', function() {
+    const url = this.value.trim();
+    
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        typeSelect.value = 'youtube';
+        showPreview(url, 'youtube');
+    } else if (url.includes('drive.google.com')) {
+        typeSelect.value = 'drive';
+        showPreview(url, 'drive');
+    } else {
+        previewSection.style.display = 'none';
+    }
+});
+
+function showPreview(url, type) {
+    previewSection.style.display = 'block';
+    
+    if (type === 'youtube') {
+        let videoId = '';
+        if (url.includes('youtube.com')) {
+            const urlParams = new URLSearchParams(new URL(url).search);
+            videoId = urlParams.get('v');
+        } else if (url.includes('youtu.be')) {
+            videoId = url.split('youtu.be/')[1].split('?')[0];
+        }
+        
+        if (videoId) {
+            previewContent.innerHTML = `
+                <iframe width="100%" height="315" 
+                    src="https://www.youtube.com/embed/${videoId}" 
+                    frameborder="0" allowfullscreen>
+                </iframe>
+            `;
+        }
+    } else if (type === 'drive') {
+        previewContent.innerHTML = `
+            <div class="drive-preview">
+                <p>📁 Google Drive: ${url}</p>
+                <small>Link sẽ được lưu để học sinh tải về</small>
+            </div>
+        `;
+    }
+}
+
+document.getElementById('addDocumentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const title = document.getElementById('docTitle').value.trim();
+    const url = document.getElementById('docUrl').value.trim();
+    const type = document.getElementById('docType').value;
+    const description = document.getElementById('docDescription').value.trim();
+    const category = document.getElementById('docCategory').value;
+    
+    if (!title || !url) {
+        alert('Vui lòng nhập đầy đủ tiêu đề và link!');
+        return;
+    }
+    
+    const data = {
+        title: title,
+        url: url,
+        type: type === 'auto' ? detectType(url) : type,
+        description: description,
+        category: category
+    };
+    
+    try {
+        const response = await fetch('/teacher/add_document', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✓ Thêm tài liệu thành công!');
+            window.location.href = '/documents';
+        } else {
+            alert('✗ Lỗi: ' + result.message);
+        }
+    } catch (error) {
+        alert('✗ Có lỗi xảy ra: ' + error.message);
+        console.error(error);
+    }
+});
+
+function detectType(url) {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        return 'youtube';
+    } else if (url.includes('drive.google.com')) {
+        return 'drive';
+    } else if (url.endsWith('.pdf')) {
+        return 'pdf';
+    }
+    return 'other';
+}
+</script>
+
+<style>
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.required {
+    color: red;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+}
+
+.form-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #666;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.preview-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.preview-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.drive-preview {
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #545b62;
+}
+</style>
+{% endblock %}

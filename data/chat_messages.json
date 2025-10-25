@@ -1,0 +1,20 @@
+[
+  {
+    "id": "msg_000001",
+    "content": "hi",
+    "author_id": "1",
+    "author_name": "colan",
+    "author_role": "teacher",
+    "created_at": "2025-10-24T14:41:16.538786",
+    "reply_to": null
+  },
+  {
+    "id": "msg_000002",
+    "content": "chào cô",
+    "author_id": "4",
+    "author_name": "tuan",
+    "author_role": "student",
+    "created_at": "2025-10-24T14:41:33.987062",
+    "reply_to": "msg_000001"
+  }
+]

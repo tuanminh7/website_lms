@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit_mode %}Chỉnh sửa bài viết{% else %}Tạo bài viết mới{% endif %} - Diễn đàn{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4>
+                        {% if edit_mode %}
+                            <i class="fas fa-edit"></i> Chỉnh sửa bài viết
+                        {% else %}
+                            <i class="fas fa-plus"></i> Tạo bài viết mới
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form id="postForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Tiêu đề <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{% if edit_mode %}{{ post.title }}{% endif %}" 
+                                   placeholder="Nhập tiêu đề bài viết..." required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Nội dung <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="content" name="content" rows="12" 
+                                      placeholder="Nhập nội dung bài viết..." required>{% if edit_mode %}{{ post.content }}{% endif %}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">Thẻ tag (phân cách bằng dấu phẩy)</label>
+                            <input type="text" class="form-control" id="tags" name="tags" 
+                                   value="{% if edit_mode %}{{ post.tags|join(', ') }}{% endif %}"
+                                   placeholder="VD: python, lập trình, thuật toán">
+                            <small class="text-muted">Giúp người khác dễ tìm kiếm bài viết của bạn</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="files" class="form-label">File đính kèm (ảnh, tài liệu)</label>
+                            <input type="file" class="form-control" id="files" name="files" multiple 
+                                   accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.txt,.zip,.rar">
+                            <small class="text-muted">
+                                Tối đa 10MB mỗi file. Hỗ trợ: ảnh (png, jpg, jpeg, gif), tài liệu (pdf, doc, docx, txt, zip, rar)
+                            </small>
+                        </div>
+
+                        {% if edit_mode and post.attachments %}
+                        <div class="mb-3">
+                            <label class="form-label">File đã đính kèm:</label>
+                            <div class="row">
+                                {% for attachment in post.attachments %}
+                                    {% if attachment.type == 'image' %}
+                                    <div class="col-md-3 mb-2">
+                                        <img src="{{ url_for('static', filename=attachment.path.replace('static/', '')) }}" 
+                                             class="img-thumbnail" alt="{{ attachment.filename }}">
+                                        <small class="d-block text-muted">{{ attachment.filename }}</small>
+                                    </div>
+                                    {% else %}
+                                    <div class="col-md-6 mb-2">
+                                        <div class="alert alert-secondary p-2">
+                                            <i class="fas fa-file"></i> {{ attachment.filename }}
+                                            ({{ (attachment.size / 1024) | round(1) }} KB)
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% if edit_mode %}{{ url_for('forum_post_detail', post_id=post.id) }}{% else %}{{ url_for('forum') }}{% endif %}" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> 
+                                {% if edit_mode %}Cập nhật{% else %}Đăng bài{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('postForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    
+    if (!title || !content) {
+        alert('Vui lòng nhập đầy đủ tiêu đề và nội dung');
+        return;
+    }
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+    
+    try {
+        {% if edit_mode %}
+        const url = '{{ url_for("forum_edit_post", post_id=post.id) }}';
+        {% else %}
+        const url = '{{ url_for("forum_create_post") }}';
+        {% endif %}
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(result.message);
+            {% if edit_mode %}
+            window.location.href = '{{ url_for("forum_post_detail", post_id=post.id) }}';
+            {% else %}
+            window.location.href = '/forum/post/' + result.post_id;
+            {% endif %}
+        } else {
+            alert('Lỗi: ' + result.message);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> {% if edit_mode %}Cập nhật{% else %}Đăng bài{% endif %}';
+        }
+    } catch (error) {
+        alert('Có lỗi xảy ra: ' + error);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> {% if edit_mode %}Cập nhật{% else %}Đăng bài{% endif %}';
+    }
+});
+
+document.getElementById('files').addEventListener('change', function(e) {
+    const files = e.target.files;
+    const maxSize = 10 * 1024 * 1024;
+    
+    for (let file of files) {
+        if (file.size > maxSize) {
+            alert(`File ${file.name} quá lớn (tối đa 10MB)`);
+            this.value = '';
+            return;
+        }
+    }
+});
+</script>
+{% endblock %}

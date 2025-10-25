@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+
+{% block title %}Đăng ký - Học Tin THPT{% endblock %}
+
+{% block content %}
+<style>
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-container::before {
+        content: '';
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(99, 179, 237, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        top: -300px;
+        right: -300px;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .auth-container::after {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(30, 144, 255, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        bottom: -250px;
+        left: -250px;
+        animation: float 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(30px) rotate(5deg); }
+    }
+
+    .auth-box {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 28px;
+        padding: 3.5rem;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 
+            0 30px 80px rgba(30, 60, 114, 0.4),
+            0 0 1px rgba(255, 255, 255, 0.5) inset;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .auth-box h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0 0 0.75rem 0;
+        text-align: center;
+        letter-spacing: -0.5px;
+    }
+
+    .auth-box h2::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #1e3c72, #2a5298, #4a90e2);
+        margin: 1.25rem auto;
+        border-radius: 2px;
+        box-shadow: 0 2px 8px rgba(30, 60, 114, 0.3);
+    }
+
+    .alert {
+        padding: 1.125rem 1.5rem;
+        border-radius: 14px;
+        margin-bottom: 1.75rem;
+        font-size: 0.95rem;
+        animation: shake 0.4s ease-in-out;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+
+    .alert-error {
+        background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+        color: #c53030;
+        border-left: 4px solid #e53e3e;
+        box-shadow: 0 4px 12px rgba(197, 48, 48, 0.15);
+    }
+
+    .alert-error::before {
+        content: '⚠';
+        font-size: 1.25rem;
+    }
+
+    form {
+        margin-top: 2.25rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.75rem;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.625rem;
+        transition: all 0.3s ease;
+        letter-spacing: 0.2px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        background: #f8fafc;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-sizing: border-box;
+        color: #1a202c;
+    }
+
+    .form-group input::placeholder {
+        color: #a0aec0;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #2a5298;
+        background: white;
+        box-shadow: 
+            0 0 0 4px rgba(42, 82, 152, 0.1),
+            0 4px 12px rgba(42, 82, 152, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .form-group input:focus + label,
+    .form-group:focus-within label {
+        color: #2a5298;
+    }
+
+    .btn {
+        padding: 1rem 1.75rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        letter-spacing: 0.3px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #4a90e2 100%);
+        color: white;
+        box-shadow: 
+            0 6px 20px rgba(30, 60, 114, 0.4),
+            0 2px 4px rgba(30, 60, 114, 0.3);
+        position: relative;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 
+            0 10px 30px rgba(30, 60, 114, 0.5),
+            0 4px 8px rgba(30, 60, 114, 0.3);
+    }
+
+    .btn-primary:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-full {
+        width: 100%;
+        margin-top: 0.75rem;
+    }
+
+    .auth-footer {
+        margin-top: 2.5rem;
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 2px solid #e2e8f0;
+    }
+
+    .auth-footer p {
+        margin: 0 0 0.75rem 0;
+        color: #4a5568;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .auth-footer small {
+        color: #718096;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: block;
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #f7fafc;
+        border-radius: 10px;
+        border-left: 3px solid #2a5298;
+    }
+
+    .auth-footer a {
+        color: #2a5298;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .auth-footer a::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -3px;
+        left: 0;
+        background: linear-gradient(90deg, #1e3c72, #2a5298);
+        transition: width 0.3s ease;
+    }
+
+    .auth-footer a:hover::after {
+        width: 100%;
+    }
+
+    .auth-footer a:hover {
+        color: #1e3c72;
+    }
+
+    @media (max-width: 480px) {
+        .auth-box {
+            padding: 2.5rem 1.75rem;
+        }
+
+        .auth-box h2 {
+            font-size: 1.65rem;
+        }
+
+        .form-group input {
+            padding: 0.875rem 1rem;
+        }
+    }
+</style>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Đăng ký tài khoản học sinh</h2>
+        
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="username">Tên đăng nhập:</label>
+                <input type="text" id="username" name="username" required minlength="3">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" name="password" required minlength="6">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Xác nhận mật khẩu:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full">Đăng ký</button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Đã có tài khoản? <a href="{{ url_for('login') }}">Đăng nhập</a></p>
+            <small>* Tài khoản giáo viên do quản trị viên cấp</small>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm_password').value;
+    
+    if (password !== confirm) {
+        e.preventDefault();
+        alert('Mật khẩu xác nhận không khớp!');
+    }
+});
+</script>
+{% endblock %}

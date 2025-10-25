@@ -1,0 +1,125 @@
+[
+  {
+    "id": "sub_1",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T10:55:40.155687"
+  },
+  {
+    "id": "sub_2",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T10:56:37.113794"
+  },
+  {
+    "id": "sub_3",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "A. list = (1, 2, 3)",
+      "1": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T10:57:46.052516"
+  },
+  {
+    "id": "sub_4",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:02:19.258025"
+  },
+  {
+    "id": "sub_5",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:02:49.746007"
+  },
+  {
+    "id": "sub_6",
+    "user_id": "5",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:04:51.624452"
+  },
+  {
+    "id": "sub_7",
+    "user_id": "5",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:11:41.612988"
+  },
+  {
+    "id": "sub_8",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:13:25.332366"
+  },
+  {
+    "id": "sub_9",
+    "user_id": "5",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. float",
+      "1": "B. print()",
+      "2": "B. input()",
+      "3": "B. list = [1, 2, 3]",
+      "4": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:21:20.301002"
+  },
+  {
+    "id": "sub_10",
+    "user_id": "4",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. float",
+      "1": "B. print()",
+      "2": "B. input()",
+      "3": "B. list = [1, 2, 3]",
+      "4": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:30:41.338281"
+  },
+  {
+    "id": "sub_11",
+    "user_id": "5",
+    "course_id": "course_2",
+    "exercise_id": "1",
+    "answers": {
+      "0": "B. float",
+      "1": "B. print()",
+      "2": "B. input()",
+      "3": "B. list = [1, 2, 3]",
+      "4": "B. False False False"
+    },
+    "submitted_at": "2025-10-23T11:31:10.509126"
+  }
+]

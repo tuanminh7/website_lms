@@ -1,0 +1,22 @@
+[
+  {
+    "id": "comment_001",
+    "post_id": "post_001",
+    "author_id": "user_456",
+    "author_name": "Trần Thị B",
+    "author_role": "student",
+    "content": "Cảm ơn thầy, em đã cài thành công!",
+    "created_at": "2025-01-15T11:00:00",
+    "attachments": []
+  },
+  {
+    "id": "comment_0002",
+    "post_id": "post_0002",
+    "author_id": "4",
+    "author_name": "tuan",
+    "author_role": "student",
+    "content": "ý tưởng của em là AI quản lí học sinh",
+    "created_at": "2025-10-24T14:32:12.226103",
+    "attachments": []
+  }
+]
