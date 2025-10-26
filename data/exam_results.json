@@ -142,5 +142,371 @@
     "total_questions": 20,
     "submitted_at": "24/10/2025 08:41:03",
     "time_spent_seconds": 53
+  },
+  {
+    "user_id": "6",
+    "username": "thien",
+    "grade": "12",
+    "exam_id": "exam_12_4efec3",
+    "exam_title": "đề thi 5",
+    "score": 0.0,
+    "correct_count": 0,
+    "total_questions": 28,
+    "total_points": 0.0,
+    "question_breakdown": [
+      {
+        "question_number": 1,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 2,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 3,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 4,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 5,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 6,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 7,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 8,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 9,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 10,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 11,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 12,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 13,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 14,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 15,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 16,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 17,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 18,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 19,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 20,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 21,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 22,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 23,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 24,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 25,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 26,
+        "type": "tl2",
+        "score": 0.0,
+        "mistakes": 4
+      },
+      {
+        "question_number": 27,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 28,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      }
+    ],
+    "submitted_at": "26/10/2025 21:11:51",
+    "time_spent_seconds": 102
+  },
+  {
+    "user_id": "6",
+    "username": "thien",
+    "grade": "12",
+    "exam_id": "exam_12_4efec3",
+    "exam_title": "đề thi 5",
+    "score": 0.0,
+    "correct_count": 0,
+    "total_questions": 28,
+    "total_points": 0.0,
+    "question_breakdown": [
+      {
+        "question_number": 1,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 2,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 3,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 4,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 5,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 6,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 7,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 8,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 9,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 10,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 11,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 12,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 13,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 14,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 15,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 16,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 17,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 18,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 19,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 20,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 21,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 22,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 23,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 24,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 25,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 26,
+        "type": "tl2",
+        "score": 0.0,
+        "mistakes": 4
+      },
+      {
+        "question_number": 27,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      },
+      {
+        "question_number": 28,
+        "type": "standard",
+        "score": 0.0,
+        "selected": ""
+      }
+    ],
+    "submitted_at": "26/10/2025 21:17:39",
+    "time_spent_seconds": 30
   }
 ]

@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Quản lý đề thi{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h2 class="page-title mb-2"><i class="fas fa-folder-open"></i> Quản lý đề thi</h2>
+            <p class="text-muted mb-0">Xem và xoá những đề trắc nghiệm bạn đã import.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('tracnghiem') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-list-ul"></i> Xem đề dành cho học sinh
+            </a>
+            <a href="{{ url_for('import_exam') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Import đề mới
+            </a>
+        </div>
+    </div>
+
+{% set ns = namespace(total=0) %}
+{% for exams in exams_by_grade.values() %}
+    {% set ns.total = ns.total + (exams | length) %}
+{% endfor %}
+{% set total_exams = ns.total %}
+
+    {% if total_exams == 0 %}
+    <div class="alert alert-info shadow-sm">
+        <i class="fas fa-info-circle"></i> Bạn chưa tạo đề thi nào. Hãy sử dụng nút <strong>Import đề mới</strong> để bắt đầu.
+    </div>
+    {% endif %}
+
+    {% for grade, exams in exams_by_grade.items() %}
+    <div class="grade-section mb-4">
+        <div class="grade-header">
+            <h4 class="mb-0"><i class="fas fa-graduation-cap"></i> Khối {{ grade }}</h4>
+            <span class="badge bg-primary-subtle text-primary fw-semibold">{{ exams|length }} đề</span>
+        </div>
+
+        {% if exams %}
+        <div class="exam-list">
+            {% for exam in exams %}
+            <div class="exam-card shadow-sm">
+                <div class="exam-card-head">
+                    <div>
+                        <h5 class="mb-1">{{ exam.title }}</h5>
+                        <div class="exam-meta">
+                            <span><i class="fas fa-clock"></i> {{ exam.time_limit }} phút</span>
+                            <span><i class="fas fa-list-ol"></i> {{ exam.question_count }} câu</span>
+                            {% if exam.allow_multiple_answers %}
+                            <span class="badge bg-warning text-dark">Nhiều đáp án</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if exam.is_owner %}
+                    <button class="btn btn-sm btn-danger" onclick="deleteExam('{{ exam.grade }}', '{{ exam.id }}', '{{ exam.title | escape }}')">
+                        <i class="fas fa-trash-alt"></i> Xoá đề
+                    </button>
+                    {% else %}
+                    <span class="text-muted small fst-italic">Đề này do giáo viên khác tạo</span>
+                    {% endif %}
+                </div>
+                {% if exam.description %}
+                <p class="exam-description">{{ exam.description }}</p>
+                {% endif %}
+                <div class="exam-footer text-muted">
+                    <span><i class="fas fa-user"></i> Tác giả: {{ exam.created_by_name or 'Không rõ' }}</span>
+                    {% if exam.created_at %}
+                    <span><i class="fas fa-calendar-alt"></i> Ngày tạo: {{ exam.created_at[:10] }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-light border mt-3 mb-0">
+            <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho khối {{ grade }}.
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+async function deleteExam(grade, examId, title) {
+    if (!confirm(`Bạn chắc chắn muốn xoá đề "${title}"? Tất cả kết quả liên quan sẽ bị xoá.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch('{{ url_for("delete_exam") }}', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ grade, exam_id: examId })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+            alert(data.message || 'Không thể xoá đề thi.');
+            return;
+        }
+
+        alert(data.message || 'Đã xoá đề thi.');
+        window.location.reload();
+    } catch (error) {
+        console.error('Delete exam error:', error);
+        alert('Có lỗi xảy ra, vui lòng thử lại.');
+    }
+}
+</script>
+
+<style>
+.page-title {
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.grade-section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+.grade-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.exam-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.exam-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.25rem;
+    background: #f9fafb;
+}
+
+.exam-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.exam-card h5 {
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.exam-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.95rem;
+    color: #4b5563;
+}
+
+.exam-description {
+    margin-bottom: 0.75rem;
+    color: #1f2937;
+}
+
+.exam-footer {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.bg-primary-subtle {
+    background: rgba(37, 99, 235, 0.15);
+    color: #1d4ed8;
+}
+
+.btn-danger.btn-sm {
+    border-radius: 8px;
+}
+</style>
+{% endblock %}

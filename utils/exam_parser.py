@@ -79,6 +79,10 @@ def parse_docx_exam(file_path: str, allow_multiple_answers: bool = False) -> Lis
         options = current_question.get('options', {})
         if len(options) < 2:
             raise ExamParseError(f"Câu {current_question.get('number', len(questions) + 1)} cần ít nhất 2 lựa chọn.")
+        if current_question.get('type') == 'tl2' and len(options) != 4:
+            raise ExamParseError(
+                f"Câu {current_question.get('number', len(questions) + 1)} (TL2) cần đúng 4 ý để đánh giá Đúng/Sai."
+            )
         answers = current_question.get('correct_answer')
         if not answers:
             raise ExamParseError(f"Không xác định được đáp án đúng cho câu {current_question.get('number', len(questions) + 1)}.")
@@ -147,12 +151,17 @@ def parse_docx_exam(file_path: str, allow_multiple_answers: bool = False) -> Lis
                 current_option_letter = None
                 number = int(question_match.group(1))
                 content = question_match.group(2).strip()
+                question_type = 'tl1'
+                if '[tl2]' in content.lower():
+                    question_type = 'tl2'
+                    content = re.sub(r'\[tl2\]\s*', '', content, flags=re.IGNORECASE).strip()
                 current_question = {
                     'number': number,
                     'question': content,
                     'options': {},
                     'correct_answer': None,
-                    'explanation': ''
+                    'explanation': '',
+                    'type': question_type
                 }
                 continue
 

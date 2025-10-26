@@ -38,5 +38,13 @@
     "email": "dmkasnfoa@gmail.com",
     "role": "student",
     "created_at": "2025-10-23T11:04:27.985261"
+  },
+  {
+    "id": "6",
+    "username": "thien",
+    "password": "scrypt:32768:8:1$7US1pi9rWIjFq3ph$8aa72e8baa4edccfc4d9b103484d32045d1ea40e6f52019e1401f7be1787670c79471af3f434d9e49966d480ea56e7d895fb3df150e4270ebe7621baf39ea8b4",
+    "email": "thanhthien5764@gmail.com",
+    "role": "student",
+    "created_at": "2025-10-26T21:09:44.866897"
   }
 ]

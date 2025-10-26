@@ -11,6 +11,8 @@
         </div>
     </div>
 
+    {% set total_points = result.total_points if result.total_points is defined else result.correct_count %}
+
     <!-- Thông tin điểm -->
     <div class="row mb-4">
         <div class="col-md-4 mb-3">
@@ -29,17 +31,17 @@
         <div class="col-md-4 mb-3">
             <div class="result-card h-100">
                 <div class="card-body">
-                    <h1 class="score-display text-success">{{ result.correct_count }}</h1>
-                    <h5 class="card-title-text">Câu đúng</h5>
-                    <p class="card-subtitle-text">/ {{ result.total_questions }} câu</p>
+                    <h1 class="score-display text-primary">{{ total_points|round(2) }}</h1>
+                    <h5 class="card-title-text">Điểm tích lũy</h5>
+                    <p class="card-subtitle-text">Tối đa {{ result.total_questions }} điểm</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4 mb-3">
             <div class="result-card h-100">
                 <div class="card-body">
-                    <h1 class="score-display text-danger">{{ result.total_questions - result.correct_count }}</h1>
-                    <h5 class="card-title-text">Câu sai</h5>
+                    <h1 class="score-display text-success">{{ result.correct_count }}</h1>
+                    <h5 class="card-title-text">Câu đạt điểm tối đa</h5>
                     <p class="card-subtitle-text">/ {{ result.total_questions }} câu</p>
                 </div>
             </div>
@@ -52,7 +54,7 @@
             <div class="progress-card">
                 <div class="card-body">
                     <h5 class="progress-title"><i class="fas fa-chart-line"></i> Tỷ lệ đúng</h5>
-                    {% set percentage = (result.correct_count / result.total_questions * 100) | round(1) %}
+                    {% set percentage = (total_points / (result.total_questions if result.total_questions else 1) * 100) | round(1) %}
                     <div class="progress-bar-container">
                         <div class="progress-bar-fill 
                             {% if percentage >= 80 %}bg-success
@@ -132,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const spinner = document.getElementById('loadingSpinner');
     const wrongCountBadge = document.getElementById('wrongCountBadge');
     const toggleHeader = document.getElementById('toggleWrongAnswers');
+    let collapsed = false;
 
     const sessionResult = sessionStorage.getItem('examResult');
 
@@ -163,20 +166,76 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let html = '';
         wrongAnswers.forEach(item => {
-            html += `
-                <div class="wrong-item">
-                    <h6 class="wrong-question"><strong>Câu ${item.question_number}:</strong> ${item.question_text}</h6>
-                    <hr class="divider">
-                    <p class="answer-line"><i class="fas fa-times text-danger"></i> 
-                        <strong>Đáp án của bạn:</strong> 
-                        <span class="answer-badge wrong-answer">${item.user_answer}</span></p>
-                    <p class="answer-line"><i class="fas fa-check text-success"></i> 
-                        <strong>Đáp án đúng:</strong> 
-                        <span class="answer-badge correct-answer">${item.correct_answer}</span></p>
-                    ${item.explanation ? `<hr class="divider"><p class="explanation-text">
-                        <i class="fas fa-lightbulb"></i> 
-                        <strong>Giải thích:</strong> ${item.explanation}</p>` : ''}
-                </div>`;
+            if (item.question_type === 'tl2') {
+                const expectedSet = new Set(item.expected_true || []);
+                const optionStates = item.option_states || {};
+                const options = item.options || {};
+                let optionHtml = '';
+
+                Object.entries(options).forEach(([key, text]) => {
+                    const expectedStatus = expectedSet.has(key) ? 'Đúng' : 'Sai';
+                    const upperKey = key ? key.toString().toUpperCase() : '';
+                    const lowerKey = key ? key.toString().toLowerCase() : '';
+                    const rawState = optionStates[key] ?? optionStates[upperKey] ?? optionStates[lowerKey];
+                    let studentStatus;
+                    if (rawState === 'true') {
+                        studentStatus = 'Đúng';
+                    } else if (rawState === 'false') {
+                        studentStatus = 'Sai';
+                    } else {
+                        studentStatus = 'Chưa chọn';
+                    }
+                    let badgeClass;
+                    if (studentStatus === expectedStatus) {
+                        badgeClass = 'tl2-tag-correct';
+                    } else if (studentStatus === 'Chưa chọn') {
+                        badgeClass = 'tl2-tag-neutral';
+                    } else {
+                        badgeClass = 'tl2-tag-wrong';
+                    }
+                    optionHtml += `
+                        <div class="tl2-review-row">
+                            <div class="tl2-review-statement"><strong>${key}.</strong> ${text}</div>
+                            <div class="tl2-review-tags">
+                                <span class="tl2-tag tl2-tag-expected">Đáp án: ${expectedStatus}</span>
+                                <span class="tl2-tag ${badgeClass}">
+                                    Bạn chọn: ${studentStatus}
+                                </span>
+                            </div>
+                        </div>`;
+                });
+
+                html += `
+                    <div class="wrong-item">
+                        <h6 class="wrong-question"><strong>Câu ${item.question_number} (TL2):</strong> ${item.question_text}</h6>
+                        <hr class="divider">
+                        <div class="tl2-review">
+                            ${optionHtml}
+                        </div>
+                        ${item.missing_choices && item.missing_choices.length ? `<div class="tl2-missing-note text-danger mt-2"><i class="fas fa-exclamation-triangle"></i> Bạn chưa lựa chọn cho các ý: ${item.missing_choices.join(', ')}</div>` : ''}
+                        <div class="tl2-mistake-note text-muted mt-2">
+                            <i class="fas fa-exclamation-circle"></i> Số ý sai: ${item.mistakes}
+                        </div>
+                        ${item.explanation ? `<hr class="divider"><p class="explanation-text">
+                            <i class="fas fa-lightbulb"></i> 
+                            <strong>Giải thích:</strong> ${item.explanation}</p>` : ''}
+                    </div>`;
+            } else {
+                html += `
+                    <div class="wrong-item">
+                        <h6 class="wrong-question"><strong>Câu ${item.question_number}:</strong> ${item.question_text}</h6>
+                        <hr class="divider">
+                        <p class="answer-line"><i class="fas fa-times text-danger"></i> 
+                            <strong>Đáp án của bạn:</strong> 
+                            <span class="answer-badge wrong-answer">${item.user_answer || 'Không trả lời'}</span></p>
+                        <p class="answer-line"><i class="fas fa-check text-success"></i> 
+                            <strong>Đáp án đúng:</strong> 
+                            <span class="answer-badge correct-answer">${item.correct_answer}</span></p>
+                        ${item.explanation ? `<hr class="divider"><p class="explanation-text">
+                            <i class="fas fa-lightbulb"></i> 
+                            <strong>Giải thích:</strong> ${item.explanation}</p>` : ''}
+                    </div>`;
+            }
         });
         wrongAnswersList.innerHTML = html;
     }
@@ -192,7 +251,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 👉 Toggle mở/đóng danh sách chi tiết câu sai
     toggleHeader.addEventListener('click', function() {
-        wrongAnswersList.classList.toggle('show');
+        if (!collapsed) {
+            wrongAnswersList.classList.remove('collapsing');
+            requestAnimationFrame(() => {
+                wrongAnswersList.classList.add('collapsing');
+                wrongAnswersList.classList.add('collapsed');
+            });
+        } else {
+            wrongAnswersList.classList.remove('collapsed');
+            wrongAnswersList.classList.remove('collapsing');
+        }
+        collapsed = !collapsed;
     });
 });
 
@@ -361,16 +430,43 @@ document.querySelectorAll('.nav-link-btn').forEach(link => {
     font-size: 1rem;
 }
 
-#wrongAnswersList {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease, padding 0.3s ease;
-    padding: 0;
+@keyframes expandHeight {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 9999px;
+        opacity: 1;
+    }
 }
 
-#wrongAnswersList.show {
-    max-height: 3000px;
+@keyframes collapseHeight {
+    from {
+        max-height: 9999px;
+        opacity: 1;
+    }
+    to {
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
+#wrongAnswersList {
+    max-height: none;
+    overflow: visible;
     padding: 1.5rem;
+    animation: expandHeight 0.5s ease forwards;
+}
+
+#wrongAnswersList.collapsing {
+    animation: collapseHeight 0.5s ease forwards;
+}
+
+#wrongAnswersList.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
 }
 
 /* ========== WRONG ITEM ========== */
@@ -417,6 +513,69 @@ document.querySelectorAll('.nav-link-btn').forEach(link => {
 .correct-answer {
     background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
     color: white;
+}
+
+.tl2-review {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tl2-review-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.75rem 0.85rem;
+    background: var(--bg-white);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.tl2-review-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.tl2-tag {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.tl2-tag-expected {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+    border-color: rgba(37, 99, 235, 0.2);
+}
+
+.tl2-tag-correct {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.tl2-tag-wrong {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.tl2-tag-neutral {
+    background: rgba(148, 163, 184, 0.15);
+    color: #475569;
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+.tl2-mistake-note {
+    font-size: 0.95rem;
+}
+
+.tl2-missing-note {
+    font-size: 0.9rem;
 }
 
 .explanation-text {

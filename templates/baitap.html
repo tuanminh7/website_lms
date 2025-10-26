@@ -23,19 +23,56 @@
         </div>
     </div>
 
+    {% if has_tl2 %}
+    <div class="alert alert-info shadow-sm mb-4">
+        <i class="fas fa-info-circle"></i> Đề thi có chứa câu dạng Đúng/Sai. Đánh dấu Đúng hoặc Sai cho từng ý trong các câu đó để được chấm điểm chính xác.
+    </div>
+    {% endif %}
+
     <!-- Form câu hỏi -->
     <form id="examForm">
         {% for question in exam.questions %}
-        <div class="question-card mb-4">
+        {% set question_type = question.type | default('standard') %}
+        <div class="question-card mb-4" data-question-id="{{ question.id }}" data-question-type="{{ question_type }}">
             <div class="card-body">
                 <h5 class="question-title">
                     <span class="question-badge">Câu {{ question.number }}</span>
                     {{ question.question }}
                 </h5>
                 
+                {% if question_type == 'tl2' %}
+                <div class="tl2-hint mt-2 mb-3 text-muted">
+                    Đánh dấu Đúng/Sai cho từng ý dưới đây.
+                </div>
+                <div class="mt-3 tl2-options">
+                    {% for key, value in question.options.items() %}
+                    <div class="tl2-option mb-3" data-option-key="{{ key }}">
+                        <div class="tl2-statement">
+                            <strong>{{ key }}.</strong> {{ value }}
+                        </div>
+                        <div class="tl2-controls mt-2">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio"
+                                       name="question_{{ question.id }}_{{ key }}"
+                                       id="q{{ question.id }}_{{ key }}_true"
+                                       value="true">
+                                <label class="form-check-label" for="q{{ question.id }}_{{ key }}_true">Đúng</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio"
+                                       name="question_{{ question.id }}_{{ key }}"
+                                       id="q{{ question.id }}_{{ key }}_false"
+                                       value="false">
+                                <label class="form-check-label" for="q{{ question.id }}_{{ key }}_false">Sai</label>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
                 <div class="mt-3">
                     {% for key, value in question.options.items() %}
-                    <div class="answer-option mb-2">
+                    <div class="answer-option mb-2" data-option-key="{{ key }}">
                         <input class="form-check-input" type="radio" 
                                name="question_{{ question.id }}" 
                                id="q{{ question.id }}_{{ key }}" 
@@ -46,6 +83,7 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -126,53 +164,83 @@ function showNotification(message, type = 'info') {
 
 // ============ THU THẬP ĐÁP ÁN ============
 function collectAnswers() {
-    const answers = {};
-    
-    // Lấy tất cả radio inputs
-    const allRadios = document.querySelectorAll('input[type="radio"]');
-    
-    // Tạo Set chứa tên các câu hỏi
-    const questionNames = new Set();
-    allRadios.forEach(radio => {
-        if (radio.name.startsWith('question_')) {
-            questionNames.add(radio.name);
+    const answersMap = {};
+    document.querySelectorAll('.question-card').forEach(card => {
+        const questionId = card.dataset.questionId;
+        const questionType = card.dataset.questionType || 'standard';
+        if (!questionId) {
+            return;
         }
-    });
-    
-    console.log(`📋 Found ${questionNames.size} questions`);
-    
-    // Thu thập đáp án
-    questionNames.forEach(name => {
-        const questionId = name.replace('question_', '');
-        const selected = document.querySelector(`input[name="${name}"]:checked`);
-        answers[questionId] = selected ? selected.value : '';
-        
-        if (selected) {
-            console.log(`✓ Q${questionId}: ${selected.value}`);
+
+        if (questionType === 'tl2') {
+            const selectedTrue = [];
+            const optionStates = {};
+            let allAnswered = true;
+
+            card.querySelectorAll('.tl2-option').forEach(option => {
+                const optionKey = option.dataset.optionKey;
+                const selected = option.querySelector('input[type="radio"]:checked');
+                if (!selected) {
+                    allAnswered = false;
+                } else {
+                    optionStates[optionKey] = selected.value;
+                    if (selected.value === 'true') {
+                        selectedTrue.push(optionKey);
+                    }
+                }
+            });
+
+            answersMap[questionId] = {
+                type: 'tl2',
+                answered: allAnswered,
+                selected_true: selectedTrue,
+                option_states: optionStates
+            };
         } else {
-            console.log(`✗ Q${questionId}: (chưa chọn)`);
+            const selected = card.querySelector('input[type="radio"]:checked');
+            answersMap[questionId] = {
+                type: 'standard',
+                answered: !!selected,
+                selected: selected ? selected.value : ''
+            };
         }
     });
-    
-    console.log('📦 Answers collected:', answers);
-    return answers;
+
+    console.log('📦 Answers collected (detailed):', answersMap);
+    return answersMap;
+}
+
+function buildAnswerPayload(answersMap) {
+    const payload = {};
+    Object.entries(answersMap).forEach(([questionId, info]) => {
+        if (info.type === 'tl2') {
+            payload[questionId] = {
+                type: 'tl2',
+                selected_true: info.selected_true,
+                option_states: info.option_states
+            };
+        } else {
+            payload[questionId] = info.selected || '';
+        }
+    });
+    return payload;
 }
 
 // ============ ĐẾM SỐ CÂU CHƯA LÀM ============
-function countUnanswered() {
-    const answers = collectAnswers();
-    return Object.values(answers).filter(a => a === '').length;
+function countUnanswered(answersMap) {
+    return Object.values(answersMap).filter(info => !info.answered).length;
 }
 
 // ============ NỘP BÀI ============
-async function submitExam() {
-    const answers = collectAnswers();
-    
+async function submitExam(existingAnswersMap = null) {
+    const answersMap = existingAnswersMap || collectAnswers();
+    const answersPayload = buildAnswerPayload(answersMap);
+
     console.log('📤 SUBMITTING EXAM');
     console.log('Grade:', grade);
     console.log('Exam ID:', examId);
-    console.log('Answers:', answers);
-    
+    console.log('Answers Payload:', answersPayload);
+
     // Disable nút nộp
     const submitBtn = document.getElementById('submitBtn');
     const originalText = submitBtn.innerHTML;
@@ -188,7 +256,7 @@ async function submitExam() {
             body: JSON.stringify({
                 grade: grade,
                 exam_id: examId,
-                answers: answers
+                answers: answersPayload
             })
         });
         
@@ -242,9 +310,10 @@ function autoSubmit() {
 // ============ XỬ LÝ NÚT NỘP BÀI - NỘP LUÔN ============
 document.getElementById('submitBtn').addEventListener('click', function() {
     console.log('🖱️ Submit button clicked - Nộp bài ngay');
-    
-    const unanswered = countUnanswered();
-    
+
+    const answersMap = collectAnswers();
+    const unanswered = countUnanswered(answersMap);
+
     if (unanswered > 0) {
         // Chỉ cảnh báo nhanh, vẫn nộp
         showNotification(`⚠️ Bạn còn ${unanswered} câu chưa làm`, 'warning');
@@ -254,7 +323,7 @@ document.getElementById('submitBtn').addEventListener('click', function() {
     clearInterval(timerInterval);
     
     // Nộp bài ngay lập tức
-    submitExam();
+    submitExam(answersMap);
 });
 
 // ============ CẢNH BÁO KHI RỜI TRANG ============
@@ -420,6 +489,44 @@ document.addEventListener('DOMContentLoaded', function() {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.tl2-hint {
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+.tl2-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.tl2-option {
+    background: var(--bg-light);
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+}
+
+.tl2-option .tl2-statement {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.tl2-option .tl2-controls .form-check {
+    margin-right: 1rem;
+}
+
+.tl2-option .form-check-input {
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.tl2-option .form-check-label {
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 /* ========== BUTTONS ========== */
