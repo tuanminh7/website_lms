@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from docx import Document
 
@@ -68,8 +68,10 @@ def parse_docx_exam(file_path: str, allow_multiple_answers: bool = False) -> Lis
 
     questions: List[Dict] = []
     current_question: Dict = {}
+    current_option_letter: Optional[str] = None
 
     def finalize_current():
+        nonlocal current_question, current_option_letter
         if not current_question:
             return
         if not current_question.get('question'):
@@ -99,81 +101,97 @@ def parse_docx_exam(file_path: str, allow_multiple_answers: bool = False) -> Lis
                 answers = answers[0]
             current_question['correct_answer'] = answers
         questions.append(current_question.copy())
+        current_option_letter = None
 
     for paragraph in document.paragraphs:
-        raw_text = paragraph.text
-        normalized = _normalize_text(raw_text)
-        if not normalized:
+        raw_text = (paragraph.text or '').replace('\xa0', ' ')
+        if not raw_text.strip():
             continue
 
-        answer_line = ANSWER_PATTERN.match(normalized)
-        if answer_line and current_question:
-            answer_letter = answer_line.group(1).upper()
-            if answer_letter not in current_question.get('options', {}):
-                raise ExamParseError(f"Đáp án '{answer_letter}' không khớp với lựa chọn của câu {current_question.get('number', len(questions) + 1)}.")
-            current_answer = current_question.get('correct_answer')
-            if allow_multiple_answers:
-                answers_list = list(current_answer or [])
-                if answer_letter not in answers_list:
-                    answers_list.append(answer_letter)
-                current_question['correct_answer'] = answers_list
-            else:
-                if current_answer and current_answer != answer_letter:
-                    raise ExamParseError(f"Câu {current_question.get('number', len(questions) + 1)} bị đánh dấu nhiều đáp án đúng.")
-                current_question['correct_answer'] = answer_letter
-            continue
+        lines = [line for line in raw_text.splitlines() if line.strip()]
+        if not lines:
+            lines = [raw_text]
 
-        explanation_match = EXPLANATION_PATTERN.match(normalized)
-        if explanation_match and current_question:
-            current_question['explanation'] = explanation_match.group(2).strip()
-            continue
+        for line in lines:
+            normalized = _normalize_text(line)
+            if not normalized:
+                continue
 
-        question_match = QUESTION_PATTERN.match(normalized)
-        if question_match:
-            # Lưu câu trước nếu có
-            finalize_current()
-            number = int(question_match.group(1))
-            content = question_match.group(2).strip()
-            current_question = {
-                'number': number,
-                'question': content,
-                'options': {},
-                'correct_answer': None,
-                'explanation': ''
-            }
-            continue
-
-        option_match = OPTION_PATTERN.match(normalized)
-        if option_match and current_question:
-            letter = option_match.group(1).upper()
-            option_text = option_match.group(2).strip()
-            option_text_lower = option_text.lower()
-            is_marked_correct = any(marker in option_text_lower for marker in CORRECT_MARKERS_LOWER)
-
-            if _paragraph_has_underlined_letter(paragraph, letter):
-                is_marked_correct = True
-
-            cleaned_text = _strip_correct_markers(option_text)
-            current_question.setdefault('options', {})[letter] = cleaned_text
-
-            if is_marked_correct:
-                existing_answer = current_question.get('correct_answer')
+            answer_line = ANSWER_PATTERN.match(normalized)
+            if answer_line and current_question:
+                answer_letter = answer_line.group(1).upper()
+                if answer_letter not in current_question.get('options', {}):
+                    raise ExamParseError(f"Đáp án '{answer_letter}' không khớp với lựa chọn của câu {current_question.get('number', len(questions) + 1)}.")
+                current_answer = current_question.get('correct_answer')
                 if allow_multiple_answers:
-                    answers_list = list(existing_answer or [])
-                    if letter not in answers_list:
-                        answers_list.append(letter)
+                    answers_list = list(current_answer or [])
+                    if answer_letter not in answers_list:
+                        answers_list.append(answer_letter)
                     current_question['correct_answer'] = answers_list
                 else:
-                    if existing_answer and existing_answer != letter:
-                        raise ExamParseError(
-                            f"Câu {current_question.get('number', len(questions) + 1)} bị đánh dấu nhiều đáp án đúng."
-                        )
-                    current_question['correct_answer'] = letter
-            continue
+                    if current_answer and current_answer != answer_letter:
+                        raise ExamParseError(f"Câu {current_question.get('number', len(questions) + 1)} bị đánh dấu nhiều đáp án đúng.")
+                    current_question['correct_answer'] = answer_letter
+                current_option_letter = None
+                continue
 
-        # Nếu đoạn văn không phải câu hỏi/lựa chọn nhưng đang ở trong câu -> nối vào nội dung câu
-        if current_question:
-            current_question['question'] = f"{current_question['question']} {normalized}".strip()
+            explanation_match = EXPLANATION_PATTERN.match(normalized)
+            if explanation_match and current_question:
+                current_question['explanation'] = explanation_match.group(2).strip()
+                current_option_letter = None
+                continue
+
+            question_match = QUESTION_PATTERN.match(normalized)
+            if question_match:
+                finalize_current()
+                current_option_letter = None
+                number = int(question_match.group(1))
+                content = question_match.group(2).strip()
+                current_question = {
+                    'number': number,
+                    'question': content,
+                    'options': {},
+                    'correct_answer': None,
+                    'explanation': ''
+                }
+                continue
+
+            option_match = OPTION_PATTERN.match(normalized)
+            if option_match and current_question:
+                letter = option_match.group(1).upper()
+                option_text = option_match.group(2).strip()
+                option_text_lower = option_text.lower()
+                is_marked_correct = any(marker in option_text_lower for marker in CORRECT_MARKERS_LOWER)
+
+                if _paragraph_has_underlined_letter(paragraph, letter):
+                    is_marked_correct = True
+
+                cleaned_text = _strip_correct_markers(option_text)
+                current_question.setdefault('options', {})[letter] = cleaned_text
+                current_option_letter = letter
+
+                if is_marked_correct:
+                    existing_answer = current_question.get('correct_answer')
+                    if allow_multiple_answers:
+                        answers_list = list(existing_answer or [])
+                        if letter not in answers_list:
+                            answers_list.append(letter)
+                        current_question['correct_answer'] = answers_list
+                    else:
+                        if existing_answer and existing_answer != letter:
+                            raise ExamParseError(
+                                f"Câu {current_question.get('number', len(questions) + 1)} bị đánh dấu nhiều đáp án đúng."
+                            )
+                        current_question['correct_answer'] = letter
+                continue
+
+            if current_question:
+                if current_option_letter and current_option_letter in current_question.get('options', {}):
+                    current_question['options'][current_option_letter] = (
+                        f"{current_question['options'][current_option_letter]} {normalized}"
+                    ).strip()
+                else:
+                    current_question['question'] = f"{current_question['question']} {normalized}".strip()
 
     finalize_current()
 

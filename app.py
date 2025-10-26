@@ -508,12 +508,27 @@ def import_exam():
         temp_path = os.path.join(EXAM_UPLOAD_FOLDER, temp_filename)
         exam_file.save(temp_path)
 
+        parsed_questions = []
+
         try:
-            parsed_questions = parse_docx_exam(temp_path, allow_multiple_answers=allow_multiple)
+            parsed_questions = parse_docx_exam(temp_path, allow_multiple_answers=False)
         except ExamParseError as exc:
-            flash(f'Lỗi khi đọc file đề: {exc}', 'danger')
-            os.remove(temp_path)
-            return render_template('import_exam.html', form_data=form_data)
+            error_message = str(exc)
+            if 'nhiều đáp án đúng' in error_message.lower():
+                try:
+                    parsed_questions = parse_docx_exam(temp_path, allow_multiple_answers=True)
+                except ExamParseError as re_exc:
+                    flash(f'Lỗi khi đọc file đề: {re_exc}', 'danger')
+                    os.remove(temp_path)
+                    return render_template('import_exam.html', form_data=form_data)
+                except Exception as re_exc:
+                    flash(f'Lỗi không xác định khi xử lý file: {re_exc}', 'danger')
+                    os.remove(temp_path)
+                    return render_template('import_exam.html', form_data=form_data)
+            else:
+                flash(f'Lỗi khi đọc file đề: {exc}', 'danger')
+                os.remove(temp_path)
+                return render_template('import_exam.html', form_data=form_data)
         except Exception as exc:
             flash(f'Lỗi không xác định khi xử lý file: {exc}', 'danger')
             os.remove(temp_path)
@@ -528,6 +543,23 @@ def import_exam():
             flash('Không tìm thấy câu hỏi trắc nghiệm nào trong file.', 'danger')
             return render_template('import_exam.html', form_data=form_data)
 
+        questions_with_multiple = [
+            item.get('number')
+            for item in parsed_questions
+            if len(normalize_correct_answers(item.get('correct_answer'))) > 1
+        ]
+
+        if questions_with_multiple and not allow_multiple:
+            question_list = ', '.join(str(num) for num in questions_with_multiple[:5])
+            more_suffix = '...' if len(questions_with_multiple) > 5 else ''
+            flash(
+                f'Đề thi có các câu {question_list}{more_suffix} được đánh dấu nhiều đáp án đúng. '
+                'Vui lòng bật tùy chọn "Cho phép nhiều đáp án đúng" trước khi import.',
+                'warning'
+            )
+            form_data['allow_multiple'] = 'on'
+            return render_template('import_exam.html', form_data=form_data)
+
         questions = []
         for idx, item in enumerate(parsed_questions, start=1):
             options = item.get('options', {})
@@ -537,26 +569,30 @@ def import_exam():
                 flash(f'Câu {item.get("number", idx)} không có đủ lựa chọn.', 'danger')
                 return render_template('import_exam.html', form_data=form_data)
 
-            normalized_correct = None
-            if allow_multiple:
-                if isinstance(correct_answer, list):
-                    valid_answers = [ans for ans in correct_answer if ans in options]
-                else:
-                    valid_answers = [correct_answer] if correct_answer in options else []
-                if not valid_answers:
-                    flash(f'Không xác định được đáp án đúng cho câu {item.get("number", idx)}.', 'danger')
-                    return render_template('import_exam.html', form_data=form_data)
-                normalized_correct = valid_answers if len(valid_answers) > 1 else valid_answers[0]
+            option_keys = {key.upper(): key for key in options.keys()}
+            correct_tokens = normalize_correct_answers(correct_answer)
+            if not correct_tokens:
+                flash(f'Không xác định được đáp án đúng cho câu {item.get("number", idx)}.', 'danger')
+                return render_template('import_exam.html', form_data=form_data)
+
+            invalid_tokens = [token for token in correct_tokens if token not in option_keys]
+            if invalid_tokens:
+                flash(
+                    f'Đáp án {", ".join(invalid_tokens)} của câu {item.get("number", idx)} không trùng với lựa chọn A/B/C/D.',
+                    'danger'
+                )
+                return render_template('import_exam.html', form_data=form_data)
+
+            def convert_token(token):
+                # Map back to original key casing (A vs a) if needed
+                return option_keys.get(token, token)
+
+            if len(correct_tokens) > 1:
+                normalized_correct = [convert_token(token) for token in sorted(correct_tokens)]
+                if len(normalized_correct) == 1:
+                    normalized_correct = normalized_correct[0]
             else:
-                if isinstance(correct_answer, list):
-                    # Ưu tiên lấy đáp án đầu tiên nếu parser trả về list
-                    correct_value = correct_answer[0] if correct_answer else None
-                else:
-                    correct_value = correct_answer
-                if not correct_value or correct_value not in options:
-                    flash(f'Không xác định được đáp án đúng cho câu {item.get("number", idx)}.', 'danger')
-                    return render_template('import_exam.html', form_data=form_data)
-                normalized_correct = correct_value
+                normalized_correct = convert_token(next(iter(correct_tokens)))
 
             questions.append({
                 'id': item.get('number', idx),
@@ -574,7 +610,7 @@ def import_exam():
             'description': description,
             'time_limit': time_limit,
             'questions': questions,
-            'allow_multiple_answers': allow_multiple,
+            'allow_multiple_answers': bool(questions_with_multiple),
             'created_at': datetime.now().isoformat()
         }
 
