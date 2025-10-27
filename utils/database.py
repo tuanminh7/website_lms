@@ -2,6 +2,8 @@ import json
 import os
 from datetime import datetime
 
+SUPPORTED_GRADES = ['10', '11', '12', 'TN-THPT']
+
 class Database:
     def __init__(self):
         self.courses_file = 'data/courses.json'
@@ -124,7 +126,7 @@ class Database:
 
     def get_exams_by_teacher(self, teacher_id):
         exams_by_grade = {}
-        for grade in ['10', '11', '12']:
+        for grade in SUPPORTED_GRADES:
             bank = self.load_exam_bank(grade)
             exams = [
                 exam for exam in bank.get('exams', [])

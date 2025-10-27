@@ -29,9 +29,11 @@
                             <div class="col-md-6 mb-3">
                                 <label for="grade" class="form-label">Khối lớp</label>
                                 <select class="form-select" id="grade" name="grade" required>
-                                    <option value="10" {% if form_data.grade == '10' %}selected{% endif %}>Lớp 10</option>
-                                    <option value="11" {% if form_data.grade == '11' %}selected{% endif %}>Lớp 11</option>
-                                    <option value="12" {% if form_data.grade == '12' %}selected{% endif %}>Lớp 12</option>
+                                    {% for grade in grade_choices %}
+                                    <option value="{{ grade }}" {% if form_data.grade == grade %}selected{% endif %}>
+                                        {{ grade_labels.get(grade, 'Lớp ' ~ grade) }}
+                                    </option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">

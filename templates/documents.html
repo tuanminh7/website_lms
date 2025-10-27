@@ -19,18 +19,12 @@
                 onclick="location.href='{{ url_for('documents', grade='all', type=current_type) }}'">
             Tất cả lớp
         </button>
-        <button class="grade-btn {% if current_grade == '10' %}active{% endif %}" 
-                onclick="location.href='{{ url_for('documents', grade='10', type=current_type) }}'">
-            Lớp 10
+        {% for grade in grade_choices %}
+        <button class="grade-btn {% if current_grade == grade %}active{% endif %}" 
+                onclick="location.href='{{ url_for('documents', grade=grade, type=current_type) }}'">
+            {{ grade_labels.get(grade, 'Lớp ' ~ grade) }}
         </button>
-        <button class="grade-btn {% if current_grade == '11' %}active{% endif %}" 
-                onclick="location.href='{{ url_for('documents', grade='11', type=current_type) }}'">
-            Lớp 11
-        </button>
-        <button class="grade-btn {% if current_grade == '12' %}active{% endif %}" 
-                onclick="location.href='{{ url_for('documents', grade='12', type=current_type) }}'">
-            Lớp 12
-        </button>
+        {% endfor %}
     </div>
 
     <!-- PHẦN MỚI: Bộ lọc theo loại tài liệu -->
@@ -59,7 +53,7 @@
         {% for grade, docs in docs_by_grade.items() %}
             {% if docs %}
             <div class="grade-section">
-                <h2 class="grade-title">Lớp {{ grade }}</h2>
+                <h2 class="grade-title">{{ grade_labels.get(grade, 'Lớp ' ~ grade) }}</h2>
                 <div class="documents-grid">
                     {% for doc in docs %}
                     <!-- CẬP NHẬT: Hiển thị thông tin tài liệu với các trường mới -->
@@ -72,7 +66,7 @@
                                 {% elif doc.doc_type == 'exam' %}Đề thi
                                 {% else %}Khác{% endif %}
                             </span>
-                            <span class="doc-grade-badge">Lớp {{ doc.grade }}</span>
+                            <span class="doc-grade-badge">{{ grade_labels.get(doc.grade|string, 'Lớp ' ~ (doc.grade|string)) }}</span>
                         </div>
                         
                         <h3>{{ doc.title }}</h3>
@@ -115,7 +109,7 @@
                         {% elif doc.doc_type == 'exam' %}Đề thi
                         {% else %}Khác{% endif %}
                     </span>
-                    <span class="doc-grade-badge">Lớp {{ doc.grade }}</span>
+                    <span class="doc-grade-badge">{{ grade_labels.get(doc.grade|string, 'Lớp ' ~ (doc.grade|string)) }}</span>
                 </div>
                 
                 <h3>{{ doc.title }}</h3>
@@ -142,7 +136,7 @@
         <!-- Trạng thái trống khi không có tài liệu -->
         <div class="empty-state">
             <h3>Chưa có tài liệu nào</h3>
-            <p>Chưa có tài liệu cho lớp {{ current_grade }} trong danh mục này.</p>
+            <p>Chưa có tài liệu cho {{ grade_labels.get(current_grade, 'lớp ' ~ current_grade) }} trong danh mục này.</p>
             {% if session.role == 'teacher' %}
             <a href="{{ url_for('add_document') }}" class="btn btn-primary">Thêm tài liệu đầu tiên</a>
             {% endif %}

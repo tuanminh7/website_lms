@@ -27,6 +27,15 @@ EXAM_UPLOAD_FOLDER = os.getenv('EXAM_UPLOAD_FOLDER', 'static/uploads/exams')
 ALLOWED_EXAM_EXTENSIONS = {'docx'}
 
 
+GRADE_LABELS = {
+    '10': 'Lớp 10',
+    '11': 'Lớp 11',
+    '12': 'Lớp 12',
+    'TN-THPT': 'Lớp TN-THPT'
+}
+AVAILABLE_GRADES = list(GRADE_LABELS.keys())
+DEFAULT_GRADE = '12'
+
 db = Database()
 
 
@@ -397,22 +406,23 @@ def documents():
     type_filter = request.args.get('type', 'all')    # document, lecture, exam, hoặc all
     
     docs = db.get_all_documents()
-    
+
     if grade_filter != 'all':
-        docs = [d for d in docs if d.get('grade') == grade_filter]
+        docs = [d for d in docs if str(d.get('grade')) == grade_filter]
     if type_filter != 'all':
         docs = [d for d in docs if d.get('doc_type') == type_filter]
     
     docs_by_grade = {
-        '10': [d for d in docs if d.get('grade') == '10'],
-        '11': [d for d in docs if d.get('grade') == '11'],
-        '12': [d for d in docs if d.get('grade') == '12']
+        grade: [d for d in docs if str(d.get('grade')) == grade]
+        for grade in AVAILABLE_GRADES
     }
     
     return render_template('documents.html',
                          docs_by_grade=docs_by_grade,
                          current_grade=grade_filter,
-                         current_type=type_filter)
+                         current_type=type_filter,
+                         grade_labels=GRADE_LABELS,
+                         grade_choices=AVAILABLE_GRADES)
 
 
 
@@ -463,7 +473,7 @@ def import_exam():
         'title': '',
         'description': '',
         'time_limit': '15',
-        'grade': '12',
+        'grade': DEFAULT_GRADE,
         'allow_multiple': 'off'
     }
 
@@ -476,8 +486,8 @@ def import_exam():
         allow_multiple = form_data['allow_multiple'] == 'on'
 
         errors = []
-        if grade not in {'10', '11', '12'}:
-            errors.append('Vui lòng chọn khối lớp hợp lệ (10, 11 hoặc 12).')
+        if grade not in AVAILABLE_GRADES:
+            errors.append('Vui lòng chọn khối lớp hợp lệ.')
 
         try:
             time_limit = int(time_limit_raw)
@@ -498,7 +508,7 @@ def import_exam():
         if errors:
             for message in errors:
                 flash(message, 'danger')
-            return render_template('import_exam.html', form_data=form_data)
+            return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
         secure_name = secure_filename(exam_file.filename)
         ensure_directory(EXAM_UPLOAD_FOLDER)
@@ -518,19 +528,19 @@ def import_exam():
                 except ExamParseError as re_exc:
                     flash(f'Lỗi khi đọc file đề: {re_exc}', 'danger')
                     os.remove(temp_path)
-                    return render_template('import_exam.html', form_data=form_data)
+                    return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
                 except Exception as re_exc:
                     flash(f'Lỗi không xác định khi xử lý file: {re_exc}', 'danger')
                     os.remove(temp_path)
-                    return render_template('import_exam.html', form_data=form_data)
+                    return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
             else:
                 flash(f'Lỗi khi đọc file đề: {exc}', 'danger')
                 os.remove(temp_path)
-                return render_template('import_exam.html', form_data=form_data)
+                return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
         except Exception as exc:
             flash(f'Lỗi không xác định khi xử lý file: {exc}', 'danger')
             os.remove(temp_path)
-            return render_template('import_exam.html', form_data=form_data)
+            return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
         finally:
             try:
                 os.remove(temp_path)
@@ -539,7 +549,7 @@ def import_exam():
 
         if not parsed_questions:
             flash('Không tìm thấy câu hỏi trắc nghiệm nào trong file.', 'danger')
-            return render_template('import_exam.html', form_data=form_data)
+            return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
         questions_with_multiple = [
             item.get('number')
@@ -556,7 +566,7 @@ def import_exam():
                 'warning'
             )
             form_data['allow_multiple'] = 'on'
-            return render_template('import_exam.html', form_data=form_data)
+            return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
         questions = []
         has_tl2_question = False
@@ -567,19 +577,19 @@ def import_exam():
 
             if not options or len(options) < 2:
                 flash(f'Câu {item.get("number", idx)} không có đủ lựa chọn.', 'danger')
-                return render_template('import_exam.html', form_data=form_data)
+                return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
             if question_type == 'tl2':
                 has_tl2_question = True
                 if len(options) != 4:
                     flash(f'Câu {item.get("number", idx)} (TL2) cần đúng 4 ý để đánh giá Đúng/Sai.', 'danger')
-                    return render_template('import_exam.html', form_data=form_data)
+                    return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
             option_keys = {key.upper(): key for key in options.keys()}
             correct_tokens = normalize_correct_answers(correct_answer)
             if not correct_tokens:
                 flash(f'Không xác định được đáp án đúng cho câu {item.get("number", idx)}.', 'danger')
-                return render_template('import_exam.html', form_data=form_data)
+                return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
             invalid_tokens = [token for token in correct_tokens if token not in option_keys]
             if invalid_tokens:
@@ -587,7 +597,7 @@ def import_exam():
                     f'Đáp án {", ".join(invalid_tokens)} của câu {item.get("number", idx)} không trùng với lựa chọn A/B/C/D.',
                     'danger'
                 )
-                return render_template('import_exam.html', form_data=form_data)
+                return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
             def convert_token(token):
                 # Map back to original key casing (A vs a) if needed
@@ -630,12 +640,12 @@ def import_exam():
             db.add_exam(grade, exam_record)
         except Exception as exc:
             flash(f'Không thể lưu đề thi: {exc}', 'danger')
-            return render_template('import_exam.html', form_data=form_data)
+            return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
         flash(f'Đã tạo đề thi "{title}" với {len(questions)} câu hỏi cho khối {grade}.', 'success')
         return redirect(url_for('tracnghiem'))
 
-    return render_template('import_exam.html', form_data=form_data)
+    return render_template('import_exam.html', form_data=form_data, grade_choices=AVAILABLE_GRADES, grade_labels=GRADE_LABELS)
 
 
 @app.route('/chatbot')
@@ -723,7 +733,7 @@ def teacher_exams():
     teacher_id = session.get('user_id')
     exams_by_grade = {}
 
-    for grade in ['10', '11', '12']:
+    for grade in AVAILABLE_GRADES:
         bank = db.load_exam_bank(grade)
         grade_exams = []
 
@@ -747,6 +757,8 @@ def teacher_exams():
 
     return render_template('teacher_exams.html',
                            exams_by_grade=exams_by_grade,
+                           grade_labels=GRADE_LABELS,
+                           grade_order=AVAILABLE_GRADES,
                            username=session.get('username'))
 
 @app.route('/teacher/delete_exam', methods=['POST'])
@@ -758,7 +770,7 @@ def delete_exam():
         grade = str(data.get('grade', '')).strip()
         exam_id = data.get('exam_id')
 
-        if grade not in {'10', '11', '12'} or not exam_id:
+        if grade not in AVAILABLE_GRADES or not exam_id:
             return jsonify({'success': False, 'message': 'Thiếu thông tin đề thi'}), 400
 
         bank = db.load_exam_bank(grade)
@@ -844,7 +856,7 @@ def lam_bai_tracnghiem(grade, exam_id):
     Hiển thị đề trắc nghiệm để học sinh làm bài
      Fix: Logic thời gian chặt chẽ, xử lý session an toàn
     """
-    if grade not in ['10', '11', '12']:
+    if grade not in AVAILABLE_GRADES:
         flash('Lớp không hợp lệ', 'danger')
         return redirect(url_for('tracnghiem'))
     
@@ -1068,43 +1080,37 @@ def tracnghiem():
     print("====================================")
     
     try:
-        all_exams = []
-        
-        # Đọc đề thi từ 3 khối lớp
-        for grade in ['10', '11', '12']:
+        exams_by_grade = {grade: [] for grade in AVAILABLE_GRADES}
+
+        # Đọc đề thi từ tất cả các khối
+        for grade in AVAILABLE_GRADES:
             json_file = f'data/lop{grade}.json'
             try:
                 with open(json_file, 'r', encoding='utf-8') as f:
                     exams_data = json.load(f)
                     exams = exams_data.get('exams', [])
-                    
+
                     for exam in exams:
                         exam['grade'] = grade
-                    
-                    all_exams.extend(exams)
+                    exams_by_grade[grade].extend(exams)
                     print(f"✓ Loaded {len(exams)} exams from grade {grade}")
-            
+
             except FileNotFoundError:
                 print(f"✗ File {json_file} không tồn tại")
                 continue
             except json.JSONDecodeError:
                 print(f"✗ File {json_file} bị lỗi định dạng")
                 continue
-        
 
-        exams_by_grade = {
-            '10': [e for e in all_exams if e['grade'] == '10'],
-            '11': [e for e in all_exams if e['grade'] == '11'],
-            '12': [e for e in all_exams if e['grade'] == '12']
-        }
-        
-        print(f"Total exams: {len(all_exams)}")
-        print(f"Grade 10: {len(exams_by_grade['10'])}")
-        print(f"Grade 11: {len(exams_by_grade['11'])}")
-        print(f"Grade 12: {len(exams_by_grade['12'])}")
-        
-        return render_template('tracnghiem.html', 
+        total_exams = sum(len(exams) for exams in exams_by_grade.values())
+        print(f"Total exams: {total_exams}")
+        for grade in AVAILABLE_GRADES:
+            print(f"Grade {grade}: {len(exams_by_grade[grade])}")
+
+        return render_template('tracnghiem.html',
                              exams_by_grade=exams_by_grade,
+                             grade_labels=GRADE_LABELS,
+                             grade_order=AVAILABLE_GRADES,
                              username=session.get('username'))
     
     except Exception as e:
@@ -1139,7 +1145,7 @@ def nop_bai_tracnghiem():
                 'message': 'Thiếu thông tin đề thi'
             }), 400
         
-        if grade not in ['10', '11', '12']:
+        if grade not in AVAILABLE_GRADES:
             return jsonify({
                 'success': False,
                 'message': 'Lớp không hợp lệ'

@@ -15,30 +15,25 @@
 
     <!-- Tabs cho các lớp -->
     <ul class="nav nav-tabs custom-tabs mb-4" id="gradeTabs" role="tablist">
+        {% for grade in grade_order %}
+        {% set tab_id = 'gradeTab_' ~ loop.index %}
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="grade10-tab" data-bs-toggle="tab" data-bs-target="#grade10" type="button" role="tab">
-                <i class="fas fa-book"></i> Lớp 10
+            <button class="nav-link {% if loop.first %}active{% endif %}" id="{{ tab_id }}-tab" data-bs-toggle="tab" data-bs-target="#{{ tab_id }}" type="button" role="tab">
+                <i class="fas fa-book"></i> {{ grade_labels.get(grade, grade) }}
             </button>
         </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="grade11-tab" data-bs-toggle="tab" data-bs-target="#grade11" type="button" role="tab">
-                <i class="fas fa-book"></i> Lớp 11
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="grade12-tab" data-bs-toggle="tab" data-bs-target="#grade12" type="button" role="tab">
-                <i class="fas fa-book"></i> Lớp 12
-            </button>
-        </li>
+        {% endfor %}
     </ul>
 
     <!-- Nội dung tabs -->
     <div class="tab-content" id="gradeTabContent">
-        <!-- Lớp 10 -->
-        <div class="tab-pane fade show active" id="grade10" role="tabpanel">
-            {% if exams_by_grade['10']|length > 0 %}
+        {% for grade in grade_order %}
+        {% set tab_id = 'gradeTab_' ~ loop.index %}
+        {% set exams = exams_by_grade.get(grade, []) %}
+        <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="{{ tab_id }}" role="tabpanel">
+            {% if exams|length > 0 %}
                 <div class="row">
-                    {% for exam in exams_by_grade['10'] %}
+                    {% for exam in exams %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="exam-card h-100">
                             <div class="card-body">
@@ -51,7 +46,7 @@
                                 <p class="exam-card-info">
                                     <i class="fas fa-clock"></i> Thời gian: <strong>{{ exam.time_limit }} phút</strong>
                                 </p>
-                                <a href="{{ url_for('lam_bai_tracnghiem', grade='10', exam_id=exam.id) }}" class="exam-btn w-100">
+                                <a href="{{ url_for('lam_bai_tracnghiem', grade=grade, exam_id=exam.id) }}" class="exam-btn w-100">
                                     <i class="fas fa-pencil-alt"></i> Làm bài
                                 </a>
                             </div>
@@ -61,74 +56,11 @@
                 </div>
             {% else %}
                 <div class="empty-state">
-                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho lớp 10
+                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho {{ grade_labels.get(grade, grade) }}
                 </div>
             {% endif %}
         </div>
-
-        <!-- Lớp 11 -->
-        <div class="tab-pane fade" id="grade11" role="tabpanel">
-            {% if exams_by_grade['11']|length > 0 %}
-                <div class="row">
-                    {% for exam in exams_by_grade['11'] %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="exam-card h-100">
-                            <div class="card-body">
-                                <h5 class="exam-card-title">
-                                    <i class="fas fa-file-alt"></i> {{ exam.title }}
-                                </h5>
-                                <p class="exam-card-info">
-                                    <i class="fas fa-question-circle"></i> Số câu hỏi: <strong>{{ exam.questions|length }}</strong>
-                                </p>
-                                <p class="exam-card-info">
-                                    <i class="fas fa-clock"></i> Thời gian: <strong>{{ exam.time_limit }} phút</strong>
-                                </p>
-                                <a href="{{ url_for('lam_bai_tracnghiem', grade='11', exam_id=exam.id) }}" class="exam-btn w-100">
-                                    <i class="fas fa-pencil-alt"></i> Làm bài
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho lớp 11
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Lớp 12 -->
-        <div class="tab-pane fade" id="grade12" role="tabpanel">
-            {% if exams_by_grade['12']|length > 0 %}
-                <div class="row">
-                    {% for exam in exams_by_grade['12'] %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="exam-card h-100">
-                            <div class="card-body">
-                                <h5 class="exam-card-title">
-                                    <i class="fas fa-file-alt"></i> {{ exam.title }}
-                                </h5>
-                                <p class="exam-card-info">
-                                    <i class="fas fa-question-circle"></i> Số câu hỏi: <strong>{{ exam.questions|length }}</strong>
-                                </p>
-                                <p class="exam-card-info">
-                                    <i class="fas fa-clock"></i> Thời gian: <strong>{{ exam.time_limit }} phút</strong>
-                                </p>
-                                <a href="{{ url_for('lam_bai_tracnghiem', grade='12', exam_id=exam.id) }}" class="exam-btn w-100">
-                                    <i class="fas fa-pencil-alt"></i> Làm bài
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho lớp 12
-                </div>
-            {% endif %}
-        </div>
+        {% endfor %}
     </div>
 
     <!-- Nút xem lịch sử -->

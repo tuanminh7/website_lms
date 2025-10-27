@@ -20,8 +20,8 @@
     </div>
 
 {% set ns = namespace(total=0) %}
-{% for exams in exams_by_grade.values() %}
-    {% set ns.total = ns.total + (exams | length) %}
+{% for grade in grade_order %}
+    {% set ns.total = ns.total + (exams_by_grade.get(grade, []) | length) %}
 {% endfor %}
 {% set total_exams = ns.total %}
 
@@ -31,10 +31,11 @@
     </div>
     {% endif %}
 
-    {% for grade, exams in exams_by_grade.items() %}
+{% for grade in grade_order %}
+{% set exams = exams_by_grade.get(grade, []) %}
     <div class="grade-section mb-4">
         <div class="grade-header">
-            <h4 class="mb-0"><i class="fas fa-graduation-cap"></i> Khối {{ grade }}</h4>
+            <h4 class="mb-0"><i class="fas fa-graduation-cap"></i> {{ grade_labels.get(grade, grade) }}</h4>
             <span class="badge bg-primary-subtle text-primary fw-semibold">{{ exams|length }} đề</span>
         </div>
 
@@ -75,11 +76,11 @@
         </div>
         {% else %}
         <div class="alert alert-light border mt-3 mb-0">
-            <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho khối {{ grade }}.
+            <i class="fas fa-info-circle"></i> Chưa có đề thi nào cho {{ grade_labels.get(grade, grade) }}.
         </div>
         {% endif %}
     </div>
-    {% endfor %}
+{% endfor %}
 </div>
 
 <script>
