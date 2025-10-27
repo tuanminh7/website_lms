@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Ôn Thi THPT Quốc Gia{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h1 class="display-4">
+                <i class="fas fa-graduation-cap text-primary"></i>
+                Ôn Thi THPT Quốc Gia
+            </h1>
+            <p class="lead text-muted">Chọn mục bạn muốn xem</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Đề thi tham khảo -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-file-alt fa-4x text-primary mb-3"></i>
+                    <h4 class="card-title">Đề Thi Tham Khảo</h4>
+                    <p class="card-text text-muted">Bộ đề thi tham khảo của BGD&ĐT</p>
+                    <a href="{{ url_for('onthi_de_tham_khao') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-right"></i> Xem đề thi
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tài liệu ôn luyện -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-book-reader fa-4x text-success mb-3"></i>
+                    <h4 class="card-title">Tài Liệu Ôn Luyện</h4>
+                    <p class="card-text text-muted">Tổng hợp kiến thức và phương pháp</p>
+                    <a href="{{ url_for('onthi_tai_lieu') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-arrow-right"></i> Xem tài liệu
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đề chính thức -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-clipboard-check fa-4x text-danger mb-3"></i>
+                    <h4 class="card-title">Đề Thi Chính Thức</h4>
+                    <p class="card-text text-muted">Đề thi chính thức các năm</p>
+                    <a href="{{ url_for('onthi_de_chinh_thuc') }}" class="btn btn-danger btn-lg">
+                        <i class="fas fa-arrow-right"></i> Xem đề thi
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card:hover {
+    transform: translateY(-10px);
+    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important;
+}
+</style>
+{% endblock %}

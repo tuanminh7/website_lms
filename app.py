@@ -64,11 +64,9 @@ def student_required(f):
         
         user = get_user_by_id(session['user_id'])
         if not user or user['role'] != 'student':
-            flash('Chỉ học sinh mới có quyền truy cập trang này', 'danger')
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
-
 
 @app.route('/')
 def index():
@@ -838,10 +836,9 @@ def internal_error(error):
 
 
 ########################
-#
+###############33
 @app.route('/tracnghiem/lam-bai/<grade>/<exam_id>')
 @login_required
-@student_required
 def lam_bai_tracnghiem(grade, exam_id):
     """
     Hiển thị đề trắc nghiệm để học sinh làm bài
@@ -962,16 +959,16 @@ def lam_bai_tracnghiem(grade, exam_id):
                                  has_tl2=has_tl2)
     
     except FileNotFoundError:
-        flash('⚠️ Không tìm thấy dữ liệu đề thi', 'danger')
+        flash(' Không tìm thấy dữ liệu đề thi', 'danger')
         return redirect(url_for('tracnghiem'))
     
     except json.JSONDecodeError as e:
-        flash('⚠️ Dữ liệu đề thi bị lỗi định dạng', 'danger')
+        flash(' Dữ liệu đề thi bị lỗi định dạng', 'danger')
         print(f"JSON decode error: {e}")
         return redirect(url_for('tracnghiem'))
     
     except Exception as e:
-        flash(f'⚠️ Lỗi không xác định: {str(e)}', 'danger')
+        flash(f' Lỗi không xác định: {str(e)}', 'danger')
         print(f"Unexpected error in lam_bai_tracnghiem: {e}")
         import traceback
         traceback.print_exc()
@@ -981,7 +978,6 @@ def lam_bai_tracnghiem(grade, exam_id):
 
 @app.route('/api/tracnghiem/check-time/<grade>/<exam_id>')
 @login_required
-@student_required
 def api_check_exam_time(grade, exam_id):
     """
     API kiểm tra thời gian còn lại - GỌI TỪ JAVASCRIPT
@@ -1061,7 +1057,6 @@ def api_check_exam_time(grade, exam_id):
 
 @app.route('/tracnghiem')
 @login_required
-@student_required
 def tracnghiem():
     """
     Trang chọn đề thi trắc nghiệm
@@ -1121,10 +1116,9 @@ def tracnghiem():
 
 @app.route('/tracnghiem/nop-bai', methods=['POST'])
 @login_required
-@student_required
 def nop_bai_tracnghiem():
     """
-    Nộp bài - ✅ Thêm validate thời gian
+    Nộp bài -  Thêm validate thời gian
     """
     try:
         data = request.get_json()
@@ -1156,7 +1150,7 @@ def nop_bai_tracnghiem():
         if session_key not in session:
             return jsonify({
                 'success': False,
-                'message': '⚠️ Session đã hết hạn. Vui lòng làm lại.'
+                'message': ' Session đã hết hạn. Vui lòng làm lại.'
             }), 403
         
         json_file = f'data/lop{grade}.json'
@@ -1369,7 +1363,6 @@ def nop_bai_tracnghiem():
 
 @app.route('/tracnghiem/lich-su')
 @login_required
-@student_required
 def lich_su_tracnghiem():
     """
     Hiển thị lịch sử làm bài trắc nghiệm của học sinh
@@ -1407,7 +1400,7 @@ def lich_su_tracnghiem():
 
 @app.route('/tracnghiem/reset/<grade>/<exam_id>')
 @login_required
-@student_required
+
 def reset_exam_session(grade, exam_id):
     """
     Reset session để làm lại bài thi
@@ -1424,7 +1417,6 @@ def reset_exam_session(grade, exam_id):
 
 @app.route('/tracnghiem/ket-qua/<grade>/<exam_id>')
 @login_required
-@student_required
 def ket_qua_tracnghiem(grade, exam_id):
     """
     Hiển thị kết quả bài làm (lấy từ sessionStorage JavaScript)
@@ -1892,6 +1884,48 @@ def delete_chat_message(message_id):
     
     except Exception as e:
         return jsonify({'success': False, 'message': f'Lỗi: {str(e)}'})
+
+#################
+@app.route('/lop10')
+@login_required
+def lop10():
+    return render_template('lop10.html', username=session.get('username'))
+
+
+@app.route('/lop11')
+@login_required
+def lop11():
+    return render_template('lop11.html', username=session.get('username'))
+
+
+@app.route('/lop12')
+@login_required
+def lop12():
+    return render_template('lop12.html', username=session.get('username'))
+
+
+@app.route('/onthi')
+@login_required
+def onthi():
+    return render_template('onthi/onthi_main.html', username=session.get('username'))
+
+
+@app.route('/onthi/de-tham-khao')
+@login_required
+def onthi_de_tham_khao():
+    return render_template('onthi/de_tham_khao.html', username=session.get('username'))
+
+
+@app.route('/onthi/tai-lieu-on-luyen')
+@login_required
+def onthi_tai_lieu():
+    return render_template('onthi/tai_lieu_on_luyen.html', username=session.get('username'))
+
+
+@app.route('/onthi/de-chinh-thuc')
+@login_required
+def onthi_de_chinh_thuc():
+    return render_template('onthi/de_chinh_thuc.html', username=session.get('username'))
 ################
 if __name__ == '__main__':
     ensure_directory('data')

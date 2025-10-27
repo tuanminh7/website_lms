@@ -149,6 +149,64 @@
             font-weight: 700;
         }
 
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown > a {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: #ffffff !important;
+        }
+
+        .dropdown > a::after {
+            content: '▼';
+            font-size: 0.7rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown:hover > a::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #1a1a1a;
+            min-width: 180px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown:hover .dropdown-menu-custom {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu-custom a {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0;
+            display: block;
+            font-size: 0.9rem;
+            color: #ffffff !important;
+        }
+
+        .dropdown-menu-custom a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff !important;
+        }
+
         .btn-logout,
         .btn-register {
             background: white !important;
@@ -322,6 +380,30 @@
                 background: rgba(255, 255, 255, 0.25);
             }
 
+            .dropdown-menu-custom {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                background: rgba(255, 255, 255, 0.05);
+                margin-top: 0.5rem;
+                margin-left: 1rem;
+                display: none;
+            }
+
+            .dropdown.active .dropdown-menu-custom {
+                display: block;
+            }
+
+            .dropdown > a::after {
+                margin-left: auto;
+            }
+
+            .dropdown.active > a::after {
+                transform: rotate(180deg);
+            }
+
             .btn-logout,
             .btn-register {
                 text-align: center;
@@ -385,18 +467,45 @@
             
             <ul class="nav-menu" id="navMenu">
                 {% if session.user_id %}
-                    <li><a href="{{ url_for('courses') }}">Khóa học</a></li>
-                    <li><a href="{{ url_for('documents') }}">Tài liệu</a></li>
-                    <li><a href="{{ url_for('exercises') }}">Bài tập</a></li>
-                    <li><a href="{{ url_for('tracnghiem') }}">Trắc nghiệm</a></li>
-                    <li><a href="{{ url_for('forum') }}">Diễn đàn tin học</a></li>
-                    <li><a href="{{ url_for('chat_room') }}">Chat</a></li>
-                    <li><a href="{{ url_for('chatbot') }}"> AI</a></li>
+                    <li><a href="{{ url_for('index') }}">Trang chủ</a></li>
+                    <!-- Dropdown Lớp học -->
+                    <li class="dropdown">
+                        <a>Học tập</a>
+                        <div class="dropdown-menu-custom">
+                            <a href="{{ url_for('lop10') }}">Lớp 10</a>
+                            <a href="{{ url_for('lop11') }}">Lớp 11</a>
+                            <a href="{{ url_for('lop12') }}">Lớp 12</a>
+                        </div>
+                    </li>
+                    
+                    <!-- Dropdown Học tập -->
+                    <li class="dropdown">
+                        <a>TN-THPT</a>
+                        <div class="dropdown-menu-custom">
+                            <a href="{{ url_for('onthi') }}">Tài liệu ôn thi</a>
+                            <a href="{{ url_for('exercises') }}">Bài tập</a>
+                            <a href="{{ url_for('tracnghiem') }}">Trắc nghiệm</a>
+                        </div>
+                    </li>
+                    
+
+                    <li><a href="{{ url_for('forum') }}">Diễn đàn</a></li>
+                    
+                    <!-- Gộp Chat & Hỏi đáp -->
+                    <li class="dropdown">
+                        <a>Chat & Hỏi đáp</a>
+                        <div class="dropdown-menu-custom">
+                            <a href="{{ url_for('chat_room') }}">Chat</a>
+                            <a href="{{ url_for('chatbot') }}">Hỏi đáp AI</a>
+                        </div>
+                    </li>
+                    
                     {% if session.role == 'teacher' %}
                         <li><a href="{{ url_for('teacher_dashboard') }}">Thống kê</a></li>
                     {% else %}
                         <li><a href="{{ url_for('student_dashboard') }}">Thống kê</a></li>
                     {% endif %}
+                    
                     <li><span>👤 {{ session.username }}</span></li>
                     <li><a href="{{ url_for('logout') }}" class="btn-logout">Đăng xuất</a></li>
                 {% else %}
@@ -437,7 +546,6 @@
         const hamburger = document.getElementById('hamburger');
         const navMenu = document.getElementById('navMenu');
         const menuOverlay = document.getElementById('menuOverlay');
-        const navLinks = document.querySelectorAll('.nav-menu a');
 
         function toggleMenu() {
             hamburger.classList.toggle('active');
@@ -449,10 +557,33 @@
         hamburger.addEventListener('click', toggleMenu);
         menuOverlay.addEventListener('click', toggleMenu);
 
-        navLinks.forEach(link => {
+        // Chỉ đóng menu khi click vào link thực sự (KHÔNG phải dropdown toggle)
+        document.querySelectorAll('.nav-menu a:not(.dropdown > a)').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 992) {
                     toggleMenu();
+                }
+            });
+        });
+
+        // Xử lý dropdown toggle - KHÔNG đóng menu
+        document.querySelectorAll('.dropdown > a').forEach(dropdownLink => {
+            dropdownLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (window.innerWidth <= 992) {
+                    const dropdown = this.parentElement;
+                    
+                    // Đóng tất cả dropdown khác
+                    document.querySelectorAll('.dropdown').forEach(d => {
+                        if (d !== dropdown) {
+                            d.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle dropdown hiện tại
+                    dropdown.classList.toggle('active');
                 }
             });
         });
@@ -463,6 +594,11 @@
                 navMenu.classList.remove('active');
                 menuOverlay.classList.remove('active');
                 document.body.style.overflow = '';
+                
+                // Remove mobile dropdown active states
+                document.querySelectorAll('.dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
             }
         });
     </script>

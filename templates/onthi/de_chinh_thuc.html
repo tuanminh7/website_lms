@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Đề Thi Chính Thức{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <i class="fas fa-tools fa-5x text-warning mb-4"></i>
+            <h1 class="display-4">Đang phát triển</h1>
+            <p class="lead text-muted">Đề thi chính thức đang được cập nhật</p>
+            <a href="{{ url_for('onthi') }}" class="btn btn-primary btn-lg mt-3">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
