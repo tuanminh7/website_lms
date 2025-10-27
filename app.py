@@ -54,7 +54,7 @@ def teacher_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
+#################33
 def student_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
