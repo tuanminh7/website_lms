@@ -9,7 +9,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #00b4db 0%, #0099cc 50%, #0077b3 100%);
+        background: #ffffff;
         padding: 2rem;
         position: relative;
         overflow: hidden;
@@ -20,7 +20,7 @@
         position: absolute;
         width: 600px;
         height: 600px;
-        background: radial-gradient(circle, rgba(0, 180, 219, 0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(0, 0, 0, 0.03) 0%, transparent 70%);
         border-radius: 50%;
         top: -300px;
         right: -250px;
@@ -32,7 +32,7 @@
         position: absolute;
         width: 450px;
         height: 450px;
-        background: radial-gradient(circle, rgba(0, 180, 219, 0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(0, 0, 0, 0.02) 0%, transparent 70%);
         border-radius: 50%;
         bottom: -200px;
         left: -200px;
@@ -49,19 +49,19 @@
     }
 
     .auth-box {
-        background: rgba(255, 255, 255, 0.98);
+        background: #ffffff;
         backdrop-filter: blur(20px);
         border-radius: 28px;
         padding: 3.5rem;
         width: 100%;
         max-width: 460px;
         box-shadow: 
-            0 25px 70px rgba(0, 131, 176, 0.35),
-            0 0 1px rgba(255, 255, 255, 0.6) inset;
+            0 25px 70px rgba(0, 0, 0, 0.1),
+            0 0 1px rgba(0, 0, 0, 0.1) inset;
         position: relative;
         z-index: 1;
         animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 2px solid #f3f4f6;
     }
 
     @keyframes slideUp {
@@ -77,11 +77,8 @@
 
     .auth-box h2 {
         font-size: 2.1rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #00b4db 0%, #0099cc 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-weight: 800;
+        color: #000000;
         margin: 0 0 0.75rem 0;
         text-align: center;
         letter-spacing: -0.5px;
@@ -92,10 +89,10 @@
         display: block;
         width: 80px;
         height: 4px;
-        background: linear-gradient(90deg, #00b4db, #0099cc);
+        background: #000000;
         margin: 1.25rem auto;
         border-radius: 2px;
-        box-shadow: 0 2px 10px rgba(0, 131, 176, 0.4);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
     }
 
     .alert {
@@ -140,7 +137,7 @@
         display: block;
         font-size: 0.95rem;
         font-weight: 600;
-        color: #2d3748;
+        color: #000000;
         margin-bottom: 0.625rem;
         transition: all 0.3s ease;
         letter-spacing: 0.2px;
@@ -150,37 +147,39 @@
         width: 100%;
         padding: 1rem 1.25rem;
         font-size: 1rem;
-        border: 2px solid #e2e8f0;
+        border: 2px solid #e5e7eb;
         border-radius: 16px;
-        background: #f8fafc;
+        background: #f9fafb;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-sizing: border-box;
-        color: #1a202c;
+        color: #000000;
+        font-weight: 500;
     }
 
     .form-group input::placeholder {
-        color: #a0aec0;
+        color: #9ca3af;
+        font-weight: 400;
     }
 
     .form-group input:focus {
         outline: none;
-        border-color: #00b4db;
+        border-color: #000000;
         background: white;
         box-shadow: 
-            0 0 0 4px rgba(0, 180, 219, 0.12),
-            0 4px 14px rgba(0, 180, 219, 0.2);
+            0 0 0 4px rgba(0, 0, 0, 0.08),
+            0 4px 14px rgba(0, 0, 0, 0.15);
         transform: translateY(-2px);
     }
 
     .form-group input:focus + label,
     .form-group:focus-within label {
-        color: #00b4db;
+        color: #000000;
     }
 
     .btn {
         padding: 1rem 1.75rem;
         font-size: 1.05rem;
-        font-weight: 600;
+        font-weight: 700;
         border: none;
         border-radius: 16px;
         cursor: pointer;
@@ -201,7 +200,7 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.2);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
     }
@@ -212,19 +211,20 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
-        color: white;
+        background: #000000;
+        color: #ffffff;
         box-shadow: 
-            0 6px 20px rgba(0, 180, 219, 0.4),
-            0 2px 4px rgba(0, 131, 176, 0.3);
+            0 6px 20px rgba(0, 0, 0, 0.2),
+            0 2px 4px rgba(0, 0, 0, 0.15);
         position: relative;
     }
 
     .btn-primary:hover {
         transform: translateY(-3px);
         box-shadow: 
-            0 10px 30px rgba(0, 180, 219, 0.5),
-            0 4px 8px rgba(0, 131, 176, 0.35);
+            0 10px 30px rgba(0, 0, 0, 0.25),
+            0 4px 8px rgba(0, 0, 0, 0.2);
+        background: #1f2937;
     }
 
     .btn-primary:active {
@@ -240,20 +240,20 @@
         margin-top: 2.5rem;
         text-align: center;
         padding-top: 2rem;
-        border-top: 2px solid #e2e8f0;
+        border-top: 2px solid #e5e7eb;
     }
 
     .auth-footer p {
         margin: 0;
-        color: #4a5568;
+        color: #4b5563;
         font-size: 0.95rem;
         font-weight: 500;
     }
 
     .auth-footer a {
-        color: #00b4db;
+        color: #000000;
         text-decoration: none;
-        font-weight: 700;
+        font-weight: 800;
         transition: all 0.3s ease;
         position: relative;
     }
@@ -265,7 +265,7 @@
         height: 2px;
         bottom: -3px;
         left: 0;
-        background: linear-gradient(90deg, #00b4db, #0083b0);
+        background: #000000;
         transition: width 0.3s ease;
     }
 
@@ -274,7 +274,45 @@
     }
 
     .auth-footer a:hover {
-        color: #0083b0;
+        color: #374151;
+    }
+
+    .logo-section {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .logo-icon {
+        width: 70px;
+        height: 70px;
+        background: #000000;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        animation: logoFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes logoFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .logo-icon::before {
+        content: '🎓';
+        font-size: 2.2rem;
+        filter: grayscale(100%) brightness(5);
+    }
+
+    .welcome-text {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-weight: 500;
+        line-height: 1.6;
     }
 
     @media (max-width: 480px) {
@@ -289,12 +327,26 @@
         .form-group input {
             padding: 0.875rem 1rem;
         }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+        }
+
+        .logo-icon::before {
+            font-size: 1.8rem;
+        }
     }
 </style>
 
 <div class="auth-container">
     <div class="auth-box">
+        <div class="logo-section">
+            <div class="logo-icon"></div>
+        </div>
+        
         <h2>Đăng nhập</h2>
+        <p class="welcome-text">Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục</p>
         
         {% if error %}
         <div class="alert alert-error">{{ error }}</div>
@@ -302,13 +354,13 @@
         
         <form method="POST" action="{{ url_for('login') }}">
             <div class="form-group">
-                <label for="username">Tên đăng nhập:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="username">Tên đăng nhập</label>
+                <input type="text" id="username" name="username" placeholder="Nhập tên đăng nhập của bạn" required>
             </div>
             
             <div class="form-group">
-                <label for="password">Mật khẩu:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="password">Mật khẩu</label>
+                <input type="password" id="password" name="password" placeholder="Nhập mật khẩu của bạn" required>
             </div>
             
             <button type="submit" class="btn btn-primary btn-full">Đăng nhập</button>

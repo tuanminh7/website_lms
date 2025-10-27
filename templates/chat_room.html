@@ -3,84 +3,83 @@
 {% block title %}Chat Trao Đổi - Học Tin THPT{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-4" style="height: calc(100vh - 200px);">
-    <div class="row h-100">
-        <div class="col-md-8 offset-md-2 h-100">
-            <div class="card h-100 d-flex flex-column">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-comments"></i> Chat Trao Đổi Chung
-                        <span class="badge bg-light text-dark ms-2" id="onlineCount">
-                            <i class="fas fa-users"></i> Online
+<div class="container-fluid px-3 py-4" style="height: calc(100vh - 140px);">
+    <div class="row h-100 justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-9 h-100">
+            <div class="chat-container h-100 d-flex flex-column">
+                <div class="chat-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-1">
+                                <i class="fas fa-comments"></i> Chat Trao Đổi Chung
+                            </h4>
+                            <small class="text-muted">Nơi học sinh và giáo viên trao đổi trực tiếp</small>
+                        </div>
+                        <span class="online-badge">
+                            <i class="fas fa-circle"></i> Online
                         </span>
-                    </h5>
-                    <small>Nơi học sinh và giáo viên trao đổi trực tiếp</small>
+                    </div>
                 </div>
 
-                <div class="card-body flex-grow-1 overflow-auto" id="chatMessages" style="background: #f8f9fa;">
+                <div class="chat-body flex-grow-1 overflow-auto" id="chatMessages">
                     {% for msg in messages %}
-                    <div class="message-item mb-3" data-message-id="{{ msg.id }}">
+                    <div class="message-wrapper {% if msg.author_id == session.user_id %}message-right{% else %}message-left{% endif %}" data-message-id="{{ msg.id }}">
                         {% if msg.reply_to %}
-                        <div class="reply-indicator ms-4 mb-1 p-2 bg-light rounded small" style="border-left: 3px solid #007bff;">
+                        <div class="reply-indicator">
                             <i class="fas fa-reply"></i> Trả lời tin nhắn
                         </div>
                         {% endif %}
                         
-                        <div class="d-flex {% if msg.author_id == session.user_id %}flex-row-reverse{% endif %}">
-                            <div class="message-bubble p-3 rounded shadow-sm {% if msg.author_id == session.user_id %}bg-primary text-white{% else %}bg-white{% endif %}" 
-                                 style="max-width: 70%;">
-                                <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <strong>
-                                        {{ msg.author_name }}
+                        <div class="message-bubble">
+                            <div class="message-header">
+                                <div class="author-info">
+                                    <div class="avatar">{{ msg.author_name[0].upper() }}</div>
+                                    <div>
+                                        <strong class="author-name">{{ msg.author_name }}</strong>
                                         {% if msg.author_role == 'teacher' %}
-                                            <span class="badge {% if msg.author_id == session.user_id %}bg-light text-primary{% else %}bg-success{% endif %}">
-                                                GV
-                                            </span>
+                                            <span class="teacher-badge">Giáo viên</span>
                                         {% endif %}
-                                    </strong>
-                                    <small class="ms-2 {% if msg.author_id == session.user_id %}text-white-50{% else %}text-muted{% endif %}">
-                                        {{ msg.created_at_formatted }}
-                                    </small>
+                                        <div class="message-time">{{ msg.created_at_formatted }}</div>
+                                    </div>
                                 </div>
-                                <div class="message-content">{{ msg.content }}</div>
-                                <div class="message-actions mt-2">
-                                    <button class="btn btn-sm {% if msg.author_id == session.user_id %}btn-light{% else %}btn-outline-primary{% endif %}" 
-                                            onclick="replyTo('{{ msg.id }}', '{{ msg.author_name }}', '{{ msg.content[:30] }}')">
-                                        <i class="fas fa-reply"></i>
-                                    </button>
-                                    {% if msg.author_id == session.user_id %}
-                                    <button class="btn btn-sm btn-danger" onclick="deleteMessage('{{ msg.id }}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    {% endif %}
-                                </div>
+                            </div>
+                            <div class="message-content">{{ msg.content }}</div>
+                            <div class="message-actions">
+                                <button class="action-btn" onclick="replyTo('{{ msg.id }}', '{{ msg.author_name }}', '{{ msg.content[:30] }}')">
+                                    <i class="fas fa-reply"></i> Trả lời
+                                </button>
+                                {% if msg.author_id == session.user_id %}
+                                <button class="action-btn delete-btn" onclick="deleteMessage('{{ msg.id }}')">
+                                    <i class="fas fa-trash"></i> Xóa
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
 
-                <div class="card-footer bg-white">
-                    <div id="replyPreview" class="alert alert-info mb-2" style="display: none;">
+                <div class="chat-footer">
+                    <div id="replyPreview" class="reply-preview" style="display: none;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <i class="fas fa-reply"></i> Đang trả lời: 
-                                <strong id="replyToName"></strong>
-                                <br>
-                                <small id="replyToContent" class="text-muted"></small>
+                                <i class="fas fa-reply"></i> Đang trả lời <strong id="replyToName"></strong>
+                                <div><small id="replyToContent" class="text-muted"></small></div>
                             </div>
-                            <button class="btn btn-sm btn-close" onclick="cancelReply()"></button>
+                            <button class="btn-close-reply" onclick="cancelReply()">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     </div>
                     
-                    <form id="chatForm" class="d-flex">
-                        <input type="text" id="messageInput" class="form-control me-2" 
-                               placeholder="Nhập tin nhắn..." required>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-paper-plane"></i> Gửi
+                    <form id="chatForm" class="chat-input-form">
+                        <input type="text" id="messageInput" class="chat-input" 
+                               placeholder="Nhập tin nhắn của bạn..." required>
+                        <button type="submit" class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </form>
-                    <small class="text-muted d-block mt-2">
+                    <small class="chat-info">
                         <i class="fas fa-info-circle"></i> Tin nhắn tự động cập nhật mỗi 3 giây
                     </small>
                 </div>
@@ -88,6 +87,361 @@
         </div>
     </div>
 </div>
+
+<style>
+.chat-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.chat-header {
+    background: #000000;
+    color: #ffffff;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chat-header h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.online-badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.online-badge i {
+    color: #4ade80;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.chat-body {
+    background: #f8f9fa;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.chat-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.chat-body::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+.message-wrapper {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-left {
+    align-items: flex-start;
+}
+
+.message-right {
+    align-items: flex-end;
+}
+
+.reply-indicator {
+    background: #e2e8f0;
+    color: #4a5568;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    max-width: 85%;
+    border-left: 3px solid #000000;
+}
+
+.message-bubble {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    max-width: 85%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+}
+
+.message-right .message-bubble {
+    background: #000000;
+    color: #ffffff;
+}
+
+.message-bubble:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.message-header {
+    margin-bottom: 10px;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.message-right .avatar {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.author-name {
+    font-size: 1rem;
+    font-weight: 700;
+    display: block;
+    color: #000000;
+}
+
+.message-right .author-name {
+    color: #ffffff;
+}
+
+.teacher-badge {
+    background: #10b981;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 6px;
+}
+
+.message-right .teacher-badge {
+    background: #ffffff;
+    color: #000000;
+}
+
+.message-time {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 2px;
+}
+
+.message-right .message-time {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.message-content {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin: 10px 0;
+    word-wrap: break-word;
+    color: #1f2937;
+}
+
+.message-right .message-content {
+    color: #ffffff;
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.message-right .message-actions {
+    border-top-color: rgba(255, 255, 255, 0.2);
+}
+
+.action-btn {
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    color: #6b7280;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.action-btn:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+    color: #000000;
+}
+
+.message-right .action-btn {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.message-right .action-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: #ffffff;
+}
+
+.delete-btn:hover {
+    background: #fee2e2 !important;
+    border-color: #fca5a5 !important;
+    color: #dc2626 !important;
+}
+
+.message-right .delete-btn:hover {
+    background: rgba(220, 38, 38, 0.2) !important;
+    border-color: rgba(220, 38, 38, 0.5) !important;
+    color: #ffffff !important;
+}
+
+.chat-footer {
+    background: #ffffff;
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.reply-preview {
+    background: #f0f9ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    color: #1e40af;
+}
+
+.btn-close-reply {
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-close-reply:hover {
+    background: #e5e7eb;
+    color: #000000;
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.chat-input {
+    flex: 1;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    color: #000000;
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.chat-input::placeholder {
+    color: #9ca3af;
+}
+
+.send-btn {
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.send-btn:hover {
+    background: #1f2937;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.send-btn:active {
+    transform: translateY(0);
+}
+
+.chat-info {
+    display: block;
+    margin-top: 10px;
+    color: #6b7280;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .chat-header {
+        padding: 16px;
+    }
+    
+    .chat-header h4 {
+        font-size: 1.25rem;
+    }
+    
+    .chat-body {
+        padding: 16px;
+    }
+    
+    .message-bubble {
+        max-width: 90%;
+        padding: 12px;
+    }
+    
+    .avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    
+    .message-content {
+        font-size: 1rem;
+    }
+    
+    .chat-footer {
+        padding: 16px;
+    }
+}
+</style>
 {% endblock %}
 
 {% block scripts %}
@@ -99,7 +453,7 @@ let refreshInterval;
 const chatMessages = document.getElementById('chatMessages');
 const messageInput = document.getElementById('messageInput');
 
-document.querySelectorAll('.message-item').forEach(item => {
+document.querySelectorAll('.message-wrapper').forEach(item => {
     lastMessageId = item.dataset.messageId;
 });
 
@@ -145,39 +499,36 @@ document.getElementById('chatForm').addEventListener('submit', async function(e)
 function addMessageToChat(msg) {
     const isMyMessage = msg.author_id === '{{ session.user_id }}';
     const messageHtml = `
-        <div class="message-item mb-3" data-message-id="${msg.id}">
+        <div class="message-wrapper ${isMyMessage ? 'message-right' : 'message-left'}" data-message-id="${msg.id}">
             ${msg.reply_to ? `
-            <div class="reply-indicator ms-4 mb-1 p-2 bg-light rounded small" style="border-left: 3px solid #007bff;">
+            <div class="reply-indicator">
                 <i class="fas fa-reply"></i> Trả lời tin nhắn
             </div>
             ` : ''}
             
-            <div class="d-flex ${isMyMessage ? 'flex-row-reverse' : ''}">
-                <div class="message-bubble p-3 rounded shadow-sm ${isMyMessage ? 'bg-primary text-white' : 'bg-white'}" 
-                     style="max-width: 70%;">
-                    <div class="d-flex justify-content-between align-items-start mb-1">
-                        <strong>
-                            ${msg.author_name}
+            <div class="message-bubble">
+                <div class="message-header">
+                    <div class="author-info">
+                        <div class="avatar">${msg.author_name[0].toUpperCase()}</div>
+                        <div>
+                            <strong class="author-name">${msg.author_name}</strong>
                             ${msg.author_role === 'teacher' ? `
-                                <span class="badge ${isMyMessage ? 'bg-light text-primary' : 'bg-success'}">GV</span>
+                                <span class="teacher-badge">Giáo viên</span>
                             ` : ''}
-                        </strong>
-                        <small class="ms-2 ${isMyMessage ? 'text-white-50' : 'text-muted'}">
-                            ${msg.created_at_formatted}
-                        </small>
+                            <div class="message-time">${msg.created_at_formatted}</div>
+                        </div>
                     </div>
-                    <div class="message-content">${msg.content}</div>
-                    <div class="message-actions mt-2">
-                        <button class="btn btn-sm ${isMyMessage ? 'btn-light' : 'btn-outline-primary'}" 
-                                onclick="replyTo('${msg.id}', '${msg.author_name}', '${msg.content.substring(0, 30)}')">
-                            <i class="fas fa-reply"></i>
-                        </button>
-                        ${isMyMessage ? `
-                        <button class="btn btn-sm btn-danger" onclick="deleteMessage('${msg.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        ` : ''}
-                    </div>
+                </div>
+                <div class="message-content">${msg.content}</div>
+                <div class="message-actions">
+                    <button class="action-btn" onclick="replyTo('${msg.id}', '${msg.author_name}', '${msg.content.substring(0, 30)}')">
+                        <i class="fas fa-reply"></i> Trả lời
+                    </button>
+                    ${isMyMessage ? `
+                    <button class="action-btn delete-btn" onclick="deleteMessage('${msg.id}')">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                    ` : ''}
                 </div>
             </div>
         </div>

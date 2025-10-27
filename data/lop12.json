@@ -1,548 +1,10 @@
 {
   "exams": [
     {
-      "id": "exam_12_01",
-      "title": "Đề trắc nghiệm Tin học 12 - Mạng máy tính",
-      "time_limit": 15,
-      "description": "Kiểm tra kiến thức về mạng máy tính và Internet",
-      "questions": [
-        {
-          "id": 1,
-          "number": 1,
-          "question": "Internet là gì?",
-          "options": {
-            "A": "Mạng máy tính cục bộ",
-            "B": "Mạng máy tính toàn cầu",
-            "C": "Phần mềm máy tính",
-            "D": "Hệ điều hành"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 2,
-          "number": 2,
-          "question": "LAN là viết tắt của gì?",
-          "options": {
-            "A": "Large Area Network",
-            "B": "Local Area Network",
-            "C": "Long Access Network",
-            "D": "Limited Area Network"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 3,
-          "number": 3,
-          "question": "WAN là mạng gì?",
-          "options": {
-            "A": "Mạng diện rộng",
-            "B": "Mạng cục bộ",
-            "C": "Mạng đô thị",
-            "D": "Mạng gia đình"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 4,
-          "number": 4,
-          "question": "IP Address là gì?",
-          "options": {
-            "A": "Tên miền",
-            "B": "Địa chỉ IP",
-            "C": "Mật khẩu",
-            "D": "Tên máy tính"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 5,
-          "number": 5,
-          "question": "Địa chỉ IP phiên bản 4 (IPv4) có độ dài bao nhiêu bit?",
-          "options": {
-            "A": "16 bit",
-            "B": "32 bit",
-            "C": "64 bit",
-            "D": "128 bit"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 6,
-          "number": 6,
-          "question": "DNS là viết tắt của gì?",
-          "options": {
-            "A": "Domain Name System",
-            "B": "Data Network Service",
-            "C": "Digital Name Server",
-            "D": "Domain Network System"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 7,
-          "number": 7,
-          "question": "Router có chức năng gì?",
-          "options": {
-            "A": "Lưu trữ dữ liệu",
-            "B": "Định tuyến dữ liệu giữa các mạng",
-            "C": "Hiển thị hình ảnh",
-            "D": "Xử lý văn bản"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 8,
-          "number": 8,
-          "question": "HTTP là viết tắt của gì?",
-          "options": {
-            "A": "HyperText Transfer Protocol",
-            "B": "High Transfer Text Protocol",
-            "C": "Home Tool Transfer Protocol",
-            "D": "HyperText Transmission Page"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 9,
-          "number": 9,
-          "question": "HTTPS khác HTTP ở điểm nào?",
-          "options": {
-            "A": "Nhanh hơn",
-            "B": "Bảo mật hơn",
-            "C": "Đơn giản hơn",
-            "D": "Rẻ hơn"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 10,
-          "number": 10,
-          "question": "FTP là gì?",
-          "options": {
-            "A": "Giao thức truyền file",
-            "B": "Giao thức email",
-            "C": "Giao thức web",
-            "D": "Giao thức mạng xã hội"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 11,
-          "number": 11,
-          "question": "URL là viết tắt của gì?",
-          "options": {
-            "A": "Universal Resource Locator",
-            "B": "Uniform Resource Locator",
-            "C": "United Resource Link",
-            "D": "Universal Reference Link"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 12,
-          "number": 12,
-          "question": "Switch trong mạng máy tính có tác dụng gì?",
-          "options": {
-            "A": "Kết nối các thiết bị trong cùng mạng LAN",
-            "B": "Kết nối Internet",
-            "C": "Lưu trữ dữ liệu",
-            "D": "Bảo mật mạng"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 13,
-          "number": 13,
-          "question": "Firewall có chức năng gì?",
-          "options": {
-            "A": "Tăng tốc độ mạng",
-            "B": "Bảo vệ mạng khỏi truy cập trái phép",
-            "C": "Lưu trữ dữ liệu",
-            "D": "Kết nối các mạng"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 14,
-          "number": 14,
-          "question": "Bandwidth là gì?",
-          "options": {
-            "A": "Băng thông mạng",
-            "B": "Địa chỉ IP",
-            "C": "Tên miền",
-            "D": "Giao thức mạng"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 15,
-          "number": 15,
-          "question": "Đơn vị đo tốc độ truyền dữ liệu thông dụng là gì?",
-          "options": {
-            "A": "Hz",
-            "B": "Mbps",
-            "C": "Watt",
-            "D": "GB"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 16,
-          "number": 16,
-          "question": "Modem có chức năng gì?",
-          "options": {
-            "A": "Chuyển đổi tín hiệu analog và digital",
-            "B": "Lưu trữ dữ liệu",
-            "C": "Hiển thị hình ảnh",
-            "D": "In ấn tài liệu"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 17,
-          "number": 17,
-          "question": "TCP/IP là gì?",
-          "options": {
-            "A": "Bộ giao thức truyền thông Internet",
-            "B": "Phần mềm diệt virus",
-            "C": "Hệ điều hành",
-            "D": "Trình duyệt web"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 18,
-          "number": 18,
-          "question": "Email sử dụng giao thức nào để gửi thư?",
-          "options": {
-            "A": "HTTP",
-            "B": "FTP",
-            "C": "SMTP",
-            "D": "DNS"
-          },
-          "correct_answer": "C",
-          "type": "standard"
-        },
-        {
-          "id": 19,
-          "number": 19,
-          "question": "Wi-Fi là công nghệ mạng gì?",
-          "options": {
-            "A": "Mạng có dây",
-            "B": "Mạng không dây",
-            "C": "Mạng quang",
-            "D": "Mạng vệ tinh"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 20,
-          "number": 20,
-          "question": "Địa chỉ IP nào sau đây là địa chỉ riêng (private)?",
-          "options": {
-            "A": "8.8.8.8",
-            "B": "192.168.1.1",
-            "C": "1.1.1.1",
-            "D": "123.45.67.89"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        }
-      ],
-      "allow_multiple_answers": false
-    },
-    {
-      "id": "exam_12_02",
-      "title": "Đề trắc nghiệm Tin học 12 - HTML và CSS",
-      "time_limit": 15,
-      "description": "Kiểm tra kiến thức về HTML và CSS cơ bản",
-      "questions": [
-        {
-          "id": 1,
-          "number": 1,
-          "question": "HTML là viết tắt của gì?",
-          "options": {
-            "A": "HyperText Markup Language",
-            "B": "High Tech Modern Language",
-            "C": "Home Tool Markup Language",
-            "D": "HyperText Making Language"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 2,
-          "number": 2,
-          "question": "Thẻ nào dùng để tạo tiêu đề lớn nhất trong HTML?",
-          "options": {
-            "A": "<h6>",
-            "B": "<h3>",
-            "C": "<h1>",
-            "D": "<head>"
-          },
-          "correct_answer": "C",
-          "type": "standard"
-        },
-        {
-          "id": 3,
-          "number": 3,
-          "question": "Thẻ nào dùng để tạo đoạn văn trong HTML?",
-          "options": {
-            "A": "<p>",
-            "B": "<paragraph>",
-            "C": "<text>",
-            "D": "<div>"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 4,
-          "number": 4,
-          "question": "CSS là viết tắt của gì?",
-          "options": {
-            "A": "Computer Style Sheets",
-            "B": "Cascading Style Sheets",
-            "C": "Creative Style System",
-            "D": "Colorful Style Sheets"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 5,
-          "number": 5,
-          "question": "Thẻ nào dùng để chèn hình ảnh trong HTML?",
-          "options": {
-            "A": "<image>",
-            "B": "<picture>",
-            "C": "<img>",
-            "D": "<photo>"
-          },
-          "correct_answer": "C",
-          "type": "standard"
-        },
-        {
-          "id": 6,
-          "number": 6,
-          "question": "Thuộc tính nào chỉ định đường dẫn hình ảnh?",
-          "options": {
-            "A": "href",
-            "B": "src",
-            "C": "link",
-            "D": "url"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 7,
-          "number": 7,
-          "question": "Thẻ nào dùng để tạo liên kết trong HTML?",
-          "options": {
-            "A": "<link>",
-            "B": "<a>",
-            "C": "<href>",
-            "D": "<url>"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 8,
-          "number": 8,
-          "question": "Thuộc tính nào chỉ định địa chỉ liên kết?",
-          "options": {
-            "A": "src",
-            "B": "link",
-            "C": "href",
-            "D": "url"
-          },
-          "correct_answer": "C",
-          "type": "standard"
-        },
-        {
-          "id": 9,
-          "number": 9,
-          "question": "Thẻ nào dùng để tạo danh sách có thứ tự?",
-          "options": {
-            "A": "<ul>",
-            "B": "<ol>",
-            "C": "<list>",
-            "D": "<dl>"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 10,
-          "number": 10,
-          "question": "Thẻ nào dùng để tạo danh sách không có thứ tự?",
-          "options": {
-            "A": "<ol>",
-            "B": "<ul>",
-            "C": "<list>",
-            "D": "<nl>"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 11,
-          "number": 11,
-          "question": "Trong CSS, cách nào chọn phần tử theo class?",
-          "options": {
-            "A": "#tên-class",
-            "B": ".tên-class",
-            "C": "*tên-class",
-            "D": "class=tên-class"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 12,
-          "number": 12,
-          "question": "Trong CSS, cách nào chọn phần tử theo id?",
-          "options": {
-            "A": ".tên-id",
-            "B": "#tên-id",
-            "C": "*tên-id",
-            "D": "id=tên-id"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 13,
-          "number": 13,
-          "question": "Thuộc tính CSS nào dùng để thay đổi màu chữ?",
-          "options": {
-            "A": "text-color",
-            "B": "font-color",
-            "C": "color",
-            "D": "text-style"
-          },
-          "correct_answer": "C",
-          "type": "standard"
-        },
-        {
-          "id": 14,
-          "number": 14,
-          "question": "Thuộc tính CSS nào dùng để thay đổi kích thước chữ?",
-          "options": {
-            "A": "text-size",
-            "B": "font-size",
-            "C": "text-style",
-            "D": "size"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 15,
-          "number": 15,
-          "question": "Thẻ <table> dùng để làm gì?",
-          "options": {
-            "A": "Tạo danh sách",
-            "B": "Tạo bảng",
-            "C": "Tạo form",
-            "D": "Tạo liên kết"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 16,
-          "number": 16,
-          "question": "Thẻ <tr> trong bảng HTML dùng để làm gì?",
-          "options": {
-            "A": "Tạo cột",
-            "B": "Tạo hàng",
-            "C": "Tạo tiêu đề",
-            "D": "Tạo đường viền"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 17,
-          "number": 17,
-          "question": "Thuộc tính CSS nào dùng để thay đổi màu nền?",
-          "options": {
-            "A": "color",
-            "B": "background-color",
-            "C": "bg-color",
-            "D": "bgcolor"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        },
-        {
-          "id": 18,
-          "number": 18,
-          "question": "Thẻ <div> có tác dụng gì?",
-          "options": {
-            "A": "Tạo đoạn văn",
-            "B": "Tạo tiêu đề",
-            "C": "Tạo khối phân chia",
-            "D": "Tạo liên kết"
-          },
-          "correct_answer": "C",
-          "type": "standard"
-        },
-        {
-          "id": 19,
-          "number": 19,
-          "question": "Thuộc tính CSS nào dùng để căn giữa văn bản?",
-          "options": {
-            "A": "text-align: center",
-            "B": "align: center",
-            "C": "center-text",
-            "D": "text-center"
-          },
-          "correct_answer": "A",
-          "type": "standard"
-        },
-        {
-          "id": 20,
-          "number": 20,
-          "question": "Thẻ <br> dùng để làm gì?",
-          "options": {
-            "A": "In đậm văn bản",
-            "B": "Xuống hàng",
-            "C": "Tạo đường kẻ ngang",
-            "D": "Tạo khoảng trắng"
-          },
-          "correct_answer": "B",
-          "type": "standard"
-        }
-      ],
-      "allow_multiple_answers": false
-    },
-    {
-      "id": "exam_12_db2ebf",
-      "title": "Đề thi thử",
-      "description": "Test tạo đề thi qua import file word",
-      "time_limit": 15,
+      "id": "exam_12_0eab0f",
+      "title": "tesst",
+      "description": "kkkkk",
+      "time_limit": 50,
       "questions": [
         {
           "id": 1,
@@ -556,7 +18,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 2,
@@ -570,7 +32,7 @@
           },
           "correct_answer": "A",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 3,
@@ -584,7 +46,7 @@
           },
           "correct_answer": "A",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 4,
@@ -598,7 +60,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 5,
@@ -612,7 +74,7 @@
           },
           "correct_answer": "D",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 6,
@@ -626,7 +88,7 @@
           },
           "correct_answer": "D",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 7,
@@ -640,7 +102,7 @@
           },
           "correct_answer": "C",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 8,
@@ -654,7 +116,7 @@
           },
           "correct_answer": "A",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 9,
@@ -668,7 +130,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 10,
@@ -682,7 +144,7 @@
           },
           "correct_answer": "A",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 11,
@@ -696,7 +158,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 12,
@@ -710,7 +172,7 @@
           },
           "correct_answer": "A",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 13,
@@ -724,7 +186,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 14,
@@ -738,7 +200,7 @@
           },
           "correct_answer": "C",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 15,
@@ -752,1055 +214,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 16,
-          "number": 16,
-          "question": "[TH] Phát biểu nào dưới đây phản ánh đúng nguy cơ của AI với quyền riêng tư?",
-          "options": {
-            "A": "AI không bao giờ thu thập dữ liệu cá nhân của người dùng.",
-            "B": "AI có thể bị lợi dụng để khai thác dữ liệu cá nhân trái phép.",
-            "C": "AI chỉ xử lí dữ liệu công khai nên an toàn cho người dùng.",
-            "D": "AI ngăn chặn hoàn toàn mọi hành vi xâm phạm thông tin cá nhân."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 17,
-          "number": 17,
-          "question": "[TH] Cách ứng xử nào sau đây phù hợp đối với kết quả được tạo ra bởi Trí tuệ nhân tạo?",
-          "options": {
-            "A": "Tin tưởng hoàn toàn vào tính chính xác và khách quan.",
-            "B": "Xem xét một cách thận trọng và có trách nhiệm.",
-            "C": "Giữ nguyên để làm sản phẩm học tập và nghiên cứu.",
-            "D": "Chia sẻ ra cộng đồng mà không cần kiểm chứng."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 18,
-          "number": 18,
-          "question": "[TH] Phát biểu nào dưới đây đúng khi nói về khái niệm trí tuệ nhân tạo (AI)?",
-          "options": {
-            "A": "Khả năng của máy tính trong việc lưu trữ và quản lí lượng dữ liệu lớn.",
-            "B": "Khả năng của máy tính trong việc thực hiện các công việc trí tuệ của con người.",
-            "C": "Khả năng của con người trong việc xử lí thông tin nhanh và chính xác hơn máy tính.",
-            "D": "Khả năng của máy tính trong việc kết nối và trao đổi dữ liệu trên Internet."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 19,
-          "number": 19,
-          "question": "[TH] Đặc trưng nào dưới đây thể hiện rõ bản chất của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Khả năng học hỏi và rút ra tri thức từ dữ liệu.",
-            "B": "Khả năng xử lí thông tin nhanh nhờ phần cứng mạnh.",
-            "C": "Khả năng kết nối và chia sẻ thông tin qua mạng máy tính.",
-            "D": "Khả năng lưu giữ và quản lí các tệp dữ liệu lớn."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 20,
-          "number": 20,
-          "question": "[TH] Lĩnh vực nào dưới đây là 1 trong 4 lĩnh vực nghiên cứu chính của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Hệ điều hành máy tính phục vụ quản lí tài nguyên.",
-            "B": "Cơ sở dữ liệu phục vụ lưu trữ và truy vấn thông tin.",
-            "C": "Học máy với các mô hình tự động rút ra tri thức từ dữ liệu.",
-            "D": "Điện toán đám mây hỗ trợ dịch vụ lưu trữ trực tuyến."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 21,
-          "number": 21,
-          "question": "[TF4] [VDT] An được giao nhiệm vụ tìm hiểu về các ứng dụng của trí tuệ nhân tạo trong đời sống. An tìm thấy một số ví dụ như xe tự lái, robot phẫu thuật, hệ thống nhận dạng khuôn mặt. An muốn biết những ứng dụng này có thực sự là trí tuệ nhân tạo hay không. Em hãy giúp An giải đáp thắc mắc này nhé.",
-          "options": {
-            "A": "Xe tự lái là một ứng dụng của trí tuệ nhân tạo.",
-            "B": "Robot phẫu thuật là một ứng dụng của trí tuệ nhân tạo.",
-            "C": "Hệ thống nhận dạng khuôn mặt là một ứng dụng của trí tuệ nhân tạo.",
-            "D": "Tất cả các hệ thống tự động hóa đều được coi là trí tuệ nhân tạo."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 22,
-          "number": 22,
-          "question": "[TF4] [VDT] Bình đang tìm hiểu về các đặc trưng của trí tuệ nhân tạo. Em ấy đọc được thông tin rằng trí tuệ nhân tạo có khả năng học, suy luận, nhận thức, hiểu ngôn ngữ và giải quyết vấn đề. Bình muốn biết những khả năng này được thể hiện như thế nào trong các ứng dụng thực tế. Hãy giúp Bình xác định xem những nhận định sau đây đúng hay sai nhé.",
-          "options": {
-            "A": "Hệ thống khuyến nghị sản phẩm trên các trang thương mại điện tử là một ví dụ về khả năng học của trí tuệ nhân tạo.",
-            "B": "Trợ lý ảo như Google Assistant, Siri có khả năng hiểu ngôn ngữ tự nhiên của con người.",
-            "C": "Máy tính điều khiển xe tự lái sử dụng các cảm biến để nhận thức môi trường xung quanh.",
-            "D": "Hệ thống dự báo thời tiết sử dụng các thuật toán AI để phân tích dữ liệu và đưa ra dự đoán."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 23,
-          "number": 23,
-          "question": "[TF4] [VDT] Trí tuệ nhân tạo (AI) là một ngành khoa học và công nghệ tập trung vào việc tạo ra các hệ thống thông minh có khả năng thực hiện các nhiệm vụ đòi hỏi trí thông minh của con người. Sự phát triển của AI đã mang lại nhiều ứng dụng cách mạng trong đời sống và khoa học. An và Hải đang tranh luận với nhau về ngành khoa học này. An đưa ra các nhận định sau đây?",
-          "options": {
-            "A": "Một trong những mục tiêu chính của AI là chế tạo ra các hệ thống có khả năng mô phỏng, bắt chước các khả năng tư duy và hành vi của con người.",
-            "B": "Học máy (Machine Learning) là lĩnh vực duy nhất và cốt lõi tạo nên Trí tuệ nhân tạo, và không bao gồm các lĩnh vực khác như Xử lí ngôn ngữ tự nhiên (NLP) hay Thị giác máy tính (Computer Vision).",
-            "C": "Trong lĩnh vực y tế, các hệ thống AI có khả năng hỗ trợ chẩn đoán bệnh chính xác và nhanh chóng hơn so với bác sĩ, chủ yếu nhờ vào khả năng phân tích, xử lý khối lượng lớn dữ liệu y khoa từ nhiều nguồn.",
-            "D": "Một phần mềm Trí tuệ nhân tạo được huấn luyện hoàn hảo để chơi cờ vây và chiến thắng tất cả các kiện tướng thế giới thì chắc chắn cũng sẽ đưa ra quyết định tối ưu trong việc dự báo và đầu tư chứng khoán."
-          },
-          "correct_answer": [
-            "A",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 24,
-          "number": 24,
-          "question": "[TF4] [VDT] Cô giáo muốn giới thiệu cho học sinh về khái niệm trí tuệ nhân tạo. Cô ấy muốn giải thích cho các em hiểu sự khác biệt giữa trí tuệ nhân tạo và tự động hóa. Hãy giúp cô giáo xác định những phát biểu sau đây đúng hay sai.",
-          "options": {
-            "A": "Trí tuệ nhân tạo có khả năng thực hiện các nhiệm vụ thông minh mà trước đây chỉ con người mới làm được.",
-            "B": "Tự động hóa là khả năng của máy móc thực hiện các công việc một cách tự động.",
-            "C": "Mọi hệ thống tự động hóa đều được coi là trí tuệ nhân tạo.",
-            "D": "Trí tuệ nhân tạo có khả năng học hỏi và thích nghi với tình huống mới, trong khi tự động hóa chỉ thực hiện các thao tác lặp đi lặp lại."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "D"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 25,
-          "number": 25,
-          "question": "[TF4] [VDT] Trí tuệ nhân tạo (AI) đã trở thành một phần không thể thiếu trong đời sống hàng ngày của chúng ta, từ các trợ lý ảo trên điện thoại đến các hệ thống đề xuất sản phẩm. AI được ứng dụng rộng rãi để giải quyết các vấn đề phức tạp trong nhiều ngành nghề, nhưng đồng thời cũng tạo ra những thách thức về mặt xã hội.",
-          "options": {
-            "A": "Ứng dụng phổ biến nhất của AI trong lĩnh vực giải trí là thông qua các hệ thống đề xuất video, âm nhạc hoặc sản phẩm mua sắm dựa trên sở thích cá nhân.",
-            "B": "Trí tuệ nhân tạo được sử dụng trong lĩnh vực nông nghiệp thông minh để giám sát tình trạng cây trồng, tự động hóa việc tưới tiêu và phát hiện bệnh dịch sớm.",
-            "C": "Một trong những tác động tiêu cực của AI đến xã hội là khả năng thay thế một số công việc mang tính lặp đi lặp lại, đòi hỏi người lao động phải học hỏi kỹ năng mới để thích ứng.",
-            "D": "Khi sử dụng các dịch vụ dịch thuật tự động (như Google Translate), hệ thống AI luôn luôn dịch đúng nghĩa và ngữ cảnh 100% trong mọi trường hợp, do đó con người không cần can thiệp để kiểm tra lại."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        }
-      ],
-      "allow_multiple_answers": true,
-      "created_at": "2025-10-25T18:13:48.916590"
-    },
-    {
-      "id": "exam_12_0d08d1",
-      "title": "đề thi",
-      "description": "test import đề thi",
-      "time_limit": 15,
-      "questions": [
-        {
-          "id": 1,
-          "number": 1,
-          "question": "Ví dụ nào sau đây minh họa cho khả năng suy luận của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Phần mềm dịch tự động văn bản đa ngôn ngữ.",
-            "B": "Hệ chuyên gia sử dụng luật “nếu… thì…” để chẩn đoán bệnh.",
-            "C": "Xe tự lái nhận biết tín hiệu đèn giao thông và điều chỉnh tốc độ.",
-            "D": "Ứng dụng gợi ý sản phẩm dựa trên lịch sử mua sắm trực tuyến."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 2,
-          "number": 2,
-          "question": "Trường hợp nào dưới đây là ví dụ cho khả năng nhận thức của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Xe tự lái nhận biết vật cản và điều chỉnh hướng di chuyển.",
-            "B": "Phần mềm phân tích dữ liệu và đưa ra báo cáo thống kê.",
-            "C": "Trợ lí ảo trả lời các câu hỏi bằng ngôn ngữ tự nhiên.",
-            "D": "Hệ thống máy tính quản lí và lưu trữ thông tin bệnh án."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 3,
-          "number": 3,
-          "question": "Ứng dụng nào sau đây minh họa cho khả năng hiểu ngôn ngữ tự nhiên của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Trợ lí ảo trên điện thoại có thể giao tiếp bằng lời nói với người dùng.",
-            "B": "Xe tự lái nhận diện làn đường và tín hiệu đèn giao thông.",
-            "C": "Phần mềm nhận diện khuôn mặt trong hệ thống an ninh.",
-            "D": "Ứng dụng phân loại sản phẩm trên dây chuyền sản xuất."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 4,
-          "number": 4,
-          "question": "Đặc điểm nào dưới đây đúng với trí tuệ nhân tạo hẹp (ANI)?",
-          "options": {
-            "A": "Giải quyết công việc trí tuệ đa lĩnh vực tương tự con người.",
-            "B": "Được xây dựng để xử lí một nhiệm vụ trong một phạm vi cụ thể.",
-            "C": "Có khả năng hành động có ý thức không phụ thuộc con người.",
-            "D": "Có thể thay thế toàn bộ công việc trí tuệ của con người."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 5,
-          "number": 5,
-          "question": "Khả năng hiểu ngôn ngữ của Trí tuệ nhân tạo không thể hiện trong hệ thống nào sau đây?",
-          "options": {
-            "A": "Trợ lý ảo trên xe ô tô.",
-            "B": "Tổng đài tự động hỏi đáp.",
-            "C": "Trợ giúp soạn thảo văn bản.",
-            "D": "Nhận diện khuôn mặt."
-          },
-          "correct_answer": "D",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 6,
-          "number": 6,
-          "question": "Trong lĩnh vực y tế, Trí tuệ nhân tạo được ứng dụng phổ biến trong hệ thống nào sau đây?",
-          "options": {
-            "A": "Tự động hóa hoàn toàn việc kê đơn thuốc cho bệnh nhân.",
-            "B": "In phiếu thứ tự khám bệnh cho bệnh nhân tại các phòng khám.",
-            "C": "Tự động hóa hoàn toàn việc thẩm định các loại thuốc mới.",
-            "D": "Hỗ trợ bác sĩ chẩn đoán bệnh dựa trên hình ảnh X-quang."
-          },
-          "correct_answer": "D",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 7,
-          "number": 7,
-          "question": "Lĩnh vực tin học nào sau đây tập trung vào việc nghiên cứu và phát triển các phần mềm làm cho máy tính ngày càng thông minh như con người?",
-          "options": {
-            "A": "Mạng máy tính.",
-            "B": "An toàn thông tin.",
-            "C": "Trí tuệ nhân tạo.",
-            "D": "Internet vạn vật."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 8,
-          "number": 8,
-          "question": "Lợi ích nào sau đây của AI trong y tế là chính xác?",
-          "options": {
-            "A": "AI hỗ trợ bác sĩ rút ngắn thời gian chẩn đoán và định hướng điều trị.",
-            "B": "AI giúp loại bỏ hoàn toàn các loại bệnh hiểm nghèo trong cộng đồng.",
-            "C": "AI thay thế đội ngũ y bác sĩ trong toàn bộ hoạt động khám chữa bệnh.",
-            "D": "AI đảm bảo mọi bệnh nhân đều được điều trị với chi phí thấp nhất."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 9,
-          "number": 9,
-          "question": "[TH] Ứng dụng nào sau đây thể hiện khả năng giải quyết vấn đề của AI?",
-          "options": {
-            "A": "Phần mềm nhận diện chữ viết tay trong văn bản số.",
-            "B": "Hệ thống tối ưu lịch học của toàn trường dựa trên ràng buộc.",
-            "C": "Hệ chuyên gia đưa ra chẩn đoán bệnh dựa trên triệu chứng.",
-            "D": "Xe tự lái nhận biết tín hiệu và điều khiển phương tiện."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 10,
-          "number": 10,
-          "question": "Tình huống nào sau đây thể hiện sự khác biệt rõ rệt giữa AI hẹp và AI rộng?",
-          "options": {
-            "A": "Hệ thống nhận diện biển báo chỉ hoạt động trong lĩnh vực giao thông.",
-            "B": "Máy tính có tốc độ xử lí nhanh nhờ phần cứng tiên tiến.",
-            "C": "Phần mềm dịch tự động từ tiếng Anh sang tiếng Việt.",
-            "D": "Công cụ kiểm tra chính tả trong quá trình soạn văn bản."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 11,
-          "number": 11,
-          "question": "Trong sản xuất, AI thường được áp dụng để thực hiện công việc nào?",
-          "options": {
-            "A": "Quản lí tài chính và kế hoạch phát triển của doanh nghiệp.",
-            "B": "Phân loại sản phẩm và tối ưu quản lí chuỗi cung ứng.",
-            "C": "Xử lí văn bản và tài liệu hành chính của công ty.",
-            "D": "Giao tiếp với khách hàng bằng hệ thống chatbot tự động."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 12,
-          "number": 12,
-          "question": "AI có thể thực hiện nhiệm vụ nào sau đây thông qua khả năng hiểu ngôn ngữ?",
-          "options": {
-            "A": "Đọc văn bản và dịch thuật.",
-            "B": "Dự đoán thời tiết.",
-            "C": "Nhận dạng hình ảnh.",
-            "D": "Xử lý hóa đơn."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 13,
-          "number": 13,
-          "question": "Hệ chuyên gia MYCIN là một ứng dụng của AI trong lĩnh vực nào sau đây?",
-          "options": {
-            "A": "Giáo dục.",
-            "B": "Y học.",
-            "C": "Thương mại điện tử.",
-            "D": "Giao thông."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 14,
-          "number": 14,
-          "question": "Robot Asimo thể hiện đặc trưng nào của AI qua khả năng chào hỏi bằng ngôn ngữ tự nhiên?",
-          "options": {
-            "A": "Khả năng học.",
-            "B": "Khả năng nhận thức.",
-            "C": "Khả năng hiểu ngôn ngữ.",
-            "D": "Khả năng giải quyết vấn đề."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 15,
-          "number": 15,
-          "question": "Google dịch là một ứng dụng AI trong lĩnh vực nào sau đây?",
-          "options": {
-            "A": "Dự báo thời tiết.",
-            "B": "Xử lý ngôn ngữ tự nhiên.",
-            "C": "Hệ thống chuyên gia.",
-            "D": "Tự động hóa công nghiệp."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 16,
-          "number": 16,
-          "question": "[TH] Phát biểu nào dưới đây phản ánh đúng nguy cơ của AI với quyền riêng tư?",
-          "options": {
-            "A": "AI không bao giờ thu thập dữ liệu cá nhân của người dùng.",
-            "B": "AI có thể bị lợi dụng để khai thác dữ liệu cá nhân trái phép.",
-            "C": "AI chỉ xử lí dữ liệu công khai nên an toàn cho người dùng.",
-            "D": "AI ngăn chặn hoàn toàn mọi hành vi xâm phạm thông tin cá nhân."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 17,
-          "number": 17,
-          "question": "[TH] Cách ứng xử nào sau đây phù hợp đối với kết quả được tạo ra bởi Trí tuệ nhân tạo?",
-          "options": {
-            "A": "Tin tưởng hoàn toàn vào tính chính xác và khách quan.",
-            "B": "Xem xét một cách thận trọng và có trách nhiệm.",
-            "C": "Giữ nguyên để làm sản phẩm học tập và nghiên cứu.",
-            "D": "Chia sẻ ra cộng đồng mà không cần kiểm chứng."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 18,
-          "number": 18,
-          "question": "[TH] Phát biểu nào dưới đây đúng khi nói về khái niệm trí tuệ nhân tạo (AI)?",
-          "options": {
-            "A": "Khả năng của máy tính trong việc lưu trữ và quản lí lượng dữ liệu lớn.",
-            "B": "Khả năng của máy tính trong việc thực hiện các công việc trí tuệ của con người.",
-            "C": "Khả năng của con người trong việc xử lí thông tin nhanh và chính xác hơn máy tính.",
-            "D": "Khả năng của máy tính trong việc kết nối và trao đổi dữ liệu trên Internet."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 19,
-          "number": 19,
-          "question": "[TH] Đặc trưng nào dưới đây thể hiện rõ bản chất của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Khả năng học hỏi và rút ra tri thức từ dữ liệu.",
-            "B": "Khả năng xử lí thông tin nhanh nhờ phần cứng mạnh.",
-            "C": "Khả năng kết nối và chia sẻ thông tin qua mạng máy tính.",
-            "D": "Khả năng lưu giữ và quản lí các tệp dữ liệu lớn."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 20,
-          "number": 20,
-          "question": "[TH] Lĩnh vực nào dưới đây là 1 trong 4 lĩnh vực nghiên cứu chính của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Hệ điều hành máy tính phục vụ quản lí tài nguyên.",
-            "B": "Cơ sở dữ liệu phục vụ lưu trữ và truy vấn thông tin.",
-            "C": "Học máy với các mô hình tự động rút ra tri thức từ dữ liệu.",
-            "D": "Điện toán đám mây hỗ trợ dịch vụ lưu trữ trực tuyến."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 21,
-          "number": 21,
-          "question": "[TF4] [VDT] An được giao nhiệm vụ tìm hiểu về các ứng dụng của trí tuệ nhân tạo trong đời sống. An tìm thấy một số ví dụ như xe tự lái, robot phẫu thuật, hệ thống nhận dạng khuôn mặt. An muốn biết những ứng dụng này có thực sự là trí tuệ nhân tạo hay không. Em hãy giúp An giải đáp thắc mắc này nhé.",
-          "options": {
-            "A": "Xe tự lái là một ứng dụng của trí tuệ nhân tạo.",
-            "B": "Robot phẫu thuật là một ứng dụng của trí tuệ nhân tạo.",
-            "C": "Hệ thống nhận dạng khuôn mặt là một ứng dụng của trí tuệ nhân tạo.",
-            "D": "Tất cả các hệ thống tự động hóa đều được coi là trí tuệ nhân tạo."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 22,
-          "number": 22,
-          "question": "[TF4] [VDT] Bình đang tìm hiểu về các đặc trưng của trí tuệ nhân tạo. Em ấy đọc được thông tin rằng trí tuệ nhân tạo có khả năng học, suy luận, nhận thức, hiểu ngôn ngữ và giải quyết vấn đề. Bình muốn biết những khả năng này được thể hiện như thế nào trong các ứng dụng thực tế. Hãy giúp Bình xác định xem những nhận định sau đây đúng hay sai nhé.",
-          "options": {
-            "A": "Hệ thống khuyến nghị sản phẩm trên các trang thương mại điện tử là một ví dụ về khả năng học của trí tuệ nhân tạo.",
-            "B": "Trợ lý ảo như Google Assistant, Siri có khả năng hiểu ngôn ngữ tự nhiên của con người.",
-            "C": "Máy tính điều khiển xe tự lái sử dụng các cảm biến để nhận thức môi trường xung quanh.",
-            "D": "Hệ thống dự báo thời tiết sử dụng các thuật toán AI để phân tích dữ liệu và đưa ra dự đoán."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 23,
-          "number": 23,
-          "question": "[TF4] [VDT] Trí tuệ nhân tạo (AI) là một ngành khoa học và công nghệ tập trung vào việc tạo ra các hệ thống thông minh có khả năng thực hiện các nhiệm vụ đòi hỏi trí thông minh của con người. Sự phát triển của AI đã mang lại nhiều ứng dụng cách mạng trong đời sống và khoa học. An và Hải đang tranh luận với nhau về ngành khoa học này. An đưa ra các nhận định sau đây?",
-          "options": {
-            "A": "Một trong những mục tiêu chính của AI là chế tạo ra các hệ thống có khả năng mô phỏng, bắt chước các khả năng tư duy và hành vi của con người.",
-            "B": "Học máy (Machine Learning) là lĩnh vực duy nhất và cốt lõi tạo nên Trí tuệ nhân tạo, và không bao gồm các lĩnh vực khác như Xử lí ngôn ngữ tự nhiên (NLP) hay Thị giác máy tính (Computer Vision).",
-            "C": "Trong lĩnh vực y tế, các hệ thống AI có khả năng hỗ trợ chẩn đoán bệnh chính xác và nhanh chóng hơn so với bác sĩ, chủ yếu nhờ vào khả năng phân tích, xử lý khối lượng lớn dữ liệu y khoa từ nhiều nguồn.",
-            "D": "Một phần mềm Trí tuệ nhân tạo được huấn luyện hoàn hảo để chơi cờ vây và chiến thắng tất cả các kiện tướng thế giới thì chắc chắn cũng sẽ đưa ra quyết định tối ưu trong việc dự báo và đầu tư chứng khoán."
-          },
-          "correct_answer": [
-            "A",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 24,
-          "number": 24,
-          "question": "[TF4] [VDT] Cô giáo muốn giới thiệu cho học sinh về khái niệm trí tuệ nhân tạo. Cô ấy muốn giải thích cho các em hiểu sự khác biệt giữa trí tuệ nhân tạo và tự động hóa. Hãy giúp cô giáo xác định những phát biểu sau đây đúng hay sai.",
-          "options": {
-            "A": "Trí tuệ nhân tạo có khả năng thực hiện các nhiệm vụ thông minh mà trước đây chỉ con người mới làm được.",
-            "B": "Tự động hóa là khả năng của máy móc thực hiện các công việc một cách tự động.",
-            "C": "Mọi hệ thống tự động hóa đều được coi là trí tuệ nhân tạo.",
-            "D": "Trí tuệ nhân tạo có khả năng học hỏi và thích nghi với tình huống mới, trong khi tự động hóa chỉ thực hiện các thao tác lặp đi lặp lại."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "D"
-          ],
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 25,
-          "number": 25,
-          "question": "[TF4] [VDT] Trí tuệ nhân tạo (AI) đã trở thành một phần không thể thiếu trong đời sống hàng ngày của chúng ta, từ các trợ lý ảo trên điện thoại đến các hệ thống đề xuất sản phẩm. AI được ứng dụng rộng rãi để giải quyết các vấn đề phức tạp trong nhiều ngành nghề, nhưng đồng thời cũng tạo ra những thách thức về mặt xã hội.",
-          "options": {
-            "A": "Ứng dụng phổ biến nhất của AI trong lĩnh vực giải trí là thông qua các hệ thống đề xuất video, âm nhạc hoặc sản phẩm mua sắm dựa trên sở thích cá nhân.",
-            "B": "Trí tuệ nhân tạo được sử dụng trong lĩnh vực nông nghiệp thông minh để giám sát tình trạng cây trồng, tự động hóa việc tưới tiêu và phát hiện bệnh dịch sớm.",
-            "C": "Một trong những tác động tiêu cực của AI đến xã hội là khả năng thay thế một số công việc mang tính lặp đi lặp lại, đòi hỏi người lao động phải học hỏi kỹ năng mới để thích ứng.",
-            "D": "Khi sử dụng các dịch vụ dịch thuật tự động (như Google Translate), hệ thống AI luôn luôn dịch đúng nghĩa và ngữ cảnh 100% trong mọi trường hợp, do đó con người không cần can thiệp để kiểm tra lại."
-          },
-          "correct_answer": [
-            "A",
-            "B",
-            "C"
-          ],
-          "explanation": "",
-          "type": "standard"
-        }
-      ],
-      "allow_multiple_answers": true,
-      "created_at": "2025-10-26T10:56:59.416945"
-    },
-    {
-      "id": "exam_12_28dcaf",
-      "title": "đề thi 3",
-      "description": "Test import đề thi",
-      "time_limit": 15,
-      "questions": [
-        {
-          "id": 1,
-          "number": 1,
-          "question": "Trong cơ sở dữ liệu, bảng được dùng để làm gì?",
-          "options": {
-            "A": "Lưu trữ dữ liệu theo hàng và cột.",
-            "B": "Dùng để tính toán dữ liệu.",
-            "C": "Dùng để hiển thị báo cáo.",
-            "D": "Dùng để tạo giao diện nhập dữ liệu."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 2,
-          "number": 2,
-          "question": "Trong HTML, thẻ nào dùng để chèn hình ảnh vào trang web?",
-          "options": {
-            "A": "<img>",
-            "B": "<image>",
-            "C": "<picture>",
-            "D": "<src>"
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 3,
-          "number": 3,
-          "question": "Mỗi bản ghi trong cơ sở dữ liệu tương ứng với gì?",
-          "options": {
-            "A": "Một cột dữ liệu.",
-            "B": "Một hàng dữ liệu.",
-            "C": "Một kiểu dữ liệu.",
-            "D": "Một bảng dữ liệu."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 4,
-          "number": 4,
-          "question": "HTML là viết tắt của cụm từ nào sau đây?",
-          "options": {
-            "A": "HyperText Markup Language",
-            "B": "Hyper Tool Multi Language",
-            "C": "Hyper Transfer Markup Link",
-            "D": "Hyper Text Making Language"
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 5,
-          "number": 5,
-          "question": "Trong mô hình mạng, thiết bị nào đóng vai trò kết nối nhiều máy tính trong cùng mạng LAN?",
-          "options": {
-            "A": "Router",
-            "B": "Switch",
-            "C": "Modem",
-            "D": "Hub"
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 6,
-          "number": 6,
-          "question": "Trong hệ quản trị cơ sở dữ liệu, truy vấn được dùng để làm gì?",
-          "options": {
-            "A": "Lưu trữ dữ liệu.",
-            "B": "Xóa cơ sở dữ liệu.",
-            "C": "Tìm kiếm và xử lý dữ liệu.",
-            "D": "Tạo cấu trúc bảng mới."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 7,
-          "number": 7,
-          "question": "Địa chỉ IP gồm bao nhiêu byte trong phiên bản IPv4?",
-          "options": {
-            "A": "2 byte",
-            "B": "4 byte",
-            "C": "6 byte",
-            "D": "8 byte"
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 8,
-          "number": 8,
-          "question": "Trong CSS, thuộc tính nào dùng để thay đổi màu chữ?",
-          "options": {
-            "A": "font-style",
-            "B": "color",
-            "C": "text-align",
-            "D": "background-color"
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 9,
-          "number": 9,
-          "question": "Hệ quản trị cơ sở dữ liệu Microsoft Access thuộc loại nào sau đây?",
-          "options": {
-            "A": "CSDL phân tán",
-            "B": "CSDL tập trung",
-            "C": "CSDL hướng đối tượng",
-            "D": "CSDL mở rộng"
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 10,
-          "number": 10,
-          "question": "Trong Python, hàm input() dùng để làm gì?",
-          "options": {
-            "A": "Xuất dữ liệu ra màn hình.",
-            "B": "Nhập dữ liệu từ bàn phím.",
-            "C": "Lặp dữ liệu.",
-            "D": "Tính toán dữ liệu."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 11,
-          "number": 11,
-          "question": "Mỗi trang web được mô tả bằng gì?",
-          "options": {
-            "A": "Tệp HTML",
-            "B": "Tệp CSS",
-            "C": "Tệp JS",
-            "D": "Tệp PHP"
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 12,
-          "number": 12,
-          "question": "Trong mạng máy tính, thiết bị nào cung cấp kết nối Internet cho người dùng?",
-          "options": {
-            "A": "Modem",
-            "B": "Switch",
-            "C": "Hub",
-            "D": "Bridge"
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 13,
-          "number": 13,
-          "question": "Cấu trúc lệnh lặp trong Python là gì?",
-          "options": {
-            "A": "repeat",
-            "B": "while",
-            "C": "next",
-            "D": "continue"
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 14,
-          "number": 14,
-          "question": "Tên miền (domain) có chức năng gì?",
-          "options": {
-            "A": "Là địa chỉ IP của máy tính.",
-            "B": "Là tên thay thế cho địa chỉ IP.",
-            "C": "Là mã định danh phần cứng.",
-            "D": "Là giao thức kết nối Internet."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 15,
-          "number": 15,
-          "question": "Trong CSS, thuộc tính background-color dùng để làm gì?",
-          "options": {
-            "A": "Thay đổi màu chữ.",
-            "B": "Thay đổi màu nền.",
-            "C": "Thay đổi kích thước chữ.",
-            "D": "Căn chỉnh vị trí chữ."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 16,
-          "number": 16,
-          "question": "SQL là ngôn ngữ dùng để làm gì?",
-          "options": {
-            "A": "Lập trình website.",
-            "B": "Truy vấn và quản lý cơ sở dữ liệu.",
-            "C": "Viết ứng dụng desktop.",
-            "D": "Viết chương trình điều khiển phần cứng."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 17,
-          "number": 17,
-          "question": "Trong HTML, thẻ <a> dùng để làm gì?",
-          "options": {
-            "A": "Tạo liên kết.",
-            "B": "Hiển thị hình ảnh.",
-            "C": "Định dạng tiêu đề.",
-            "D": "Tạo danh sách."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 18,
-          "number": 18,
-          "question": "Trong Python, kiểu dữ liệu str dùng để lưu trữ gì?",
-          "options": {
-            "A": "Số nguyên.",
-            "B": "Số thực.",
-            "C": "Chuỗi ký tự.",
-            "D": "Dữ liệu logic."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 19,
-          "number": 19,
-          "question": "Khi thiết kế website, tệp CSS thường được liên kết vào HTML bằng thẻ nào?",
-          "options": {
-            "A": "<style>",
-            "B": "<link>",
-            "C": "<script>",
-            "D": "<meta>"
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 20,
-          "number": 20,
-          "question": "Trong hệ quản trị cơ sở dữ liệu, khóa chính (Primary Key) dùng để làm gì?",
-          "options": {
-            "A": "Đánh dấu cột quan trọng nhất.",
-            "B": "Phân biệt các bản ghi khác nhau.",
-            "C": "Liên kết bảng với bảng khác.",
-            "D": "Lưu trữ giá trị mặc định."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        }
-      ],
-      "allow_multiple_answers": false,
-      "created_at": "2025-10-26T11:03:51.742104"
-    },
-    {
-      "id": "exam_12_4efec3",
-      "title": "đề thi 5",
-      "description": "Test đề thì có dạng câu TL2",
-      "time_limit": 15,
-      "questions": [
-        {
-          "id": 1,
-          "number": 1,
-          "question": "Ví dụ nào sau đây minh họa cho khả năng suy luận của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Phần mềm dịch tự động văn bản đa ngôn ngữ.",
-            "B": "Hệ chuyên gia sử dụng luật “nếu… thì…” để chẩn đoán bệnh.",
-            "C": "Xe tự lái nhận biết tín hiệu đèn giao thông và điều chỉnh tốc độ.",
-            "D": "Ứng dụng gợi ý sản phẩm dựa trên lịch sử mua sắm trực tuyến."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 2,
-          "number": 2,
-          "question": "Trường hợp nào dưới đây là ví dụ cho khả năng nhận thức của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Xe tự lái nhận biết vật cản và điều chỉnh hướng di chuyển.",
-            "B": "Phần mềm phân tích dữ liệu và đưa ra báo cáo thống kê.",
-            "C": "Trợ lí ảo trả lời các câu hỏi bằng ngôn ngữ tự nhiên.",
-            "D": "Hệ thống máy tính quản lí và lưu trữ thông tin bệnh án."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 3,
-          "number": 3,
-          "question": "Ứng dụng nào sau đây minh họa cho khả năng hiểu ngôn ngữ tự nhiên của trí tuệ nhân tạo?",
-          "options": {
-            "A": "Trợ lí ảo trên điện thoại có thể giao tiếp bằng lời nói với người dùng.",
-            "B": "Xe tự lái nhận diện làn đường và tín hiệu đèn giao thông.",
-            "C": "Phần mềm nhận diện khuôn mặt trong hệ thống an ninh.",
-            "D": "Ứng dụng phân loại sản phẩm trên dây chuyền sản xuất."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 4,
-          "number": 4,
-          "question": "Đặc điểm nào dưới đây đúng với trí tuệ nhân tạo hẹp (ANI)?",
-          "options": {
-            "A": "Giải quyết công việc trí tuệ đa lĩnh vực tương tự con người.",
-            "B": "Được xây dựng để xử lí một nhiệm vụ trong một phạm vi cụ thể.",
-            "C": "Có khả năng hành động có ý thức không phụ thuộc con người.",
-            "D": "Có thể thay thế toàn bộ công việc trí tuệ của con người."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 5,
-          "number": 5,
-          "question": "Khả năng hiểu ngôn ngữ của Trí tuệ nhân tạo không thể hiện trong hệ thống nào sau đây?",
-          "options": {
-            "A": "Trợ lý ảo trên xe ô tô.",
-            "B": "Tổng đài tự động hỏi đáp.",
-            "C": "Trợ giúp soạn thảo văn bản.",
-            "D": "Nhận diện khuôn mặt."
-          },
-          "correct_answer": "D",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 6,
-          "number": 6,
-          "question": "Trong lĩnh vực y tế, Trí tuệ nhân tạo được ứng dụng phổ biến trong hệ thống nào sau đây?",
-          "options": {
-            "A": "Tự động hóa hoàn toàn việc kê đơn thuốc cho bệnh nhân.",
-            "B": "In phiếu thứ tự khám bệnh cho bệnh nhân tại các phòng khám.",
-            "C": "Tự động hóa hoàn toàn việc thẩm định các loại thuốc mới.",
-            "D": "Hỗ trợ bác sĩ chẩn đoán bệnh dựa trên hình ảnh X-quang."
-          },
-          "correct_answer": "D",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 7,
-          "number": 7,
-          "question": "Lĩnh vực tin học nào sau đây tập trung vào việc nghiên cứu và phát triển các phần mềm làm cho máy tính ngày càng thông minh như con người?",
-          "options": {
-            "A": "Mạng máy tính.",
-            "B": "An toàn thông tin.",
-            "C": "Trí tuệ nhân tạo.",
-            "D": "Internet vạn vật."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 8,
-          "number": 8,
-          "question": "Lợi ích nào sau đây của AI trong y tế là chính xác?",
-          "options": {
-            "A": "AI hỗ trợ bác sĩ rút ngắn thời gian chẩn đoán và định hướng điều trị.",
-            "B": "AI giúp loại bỏ hoàn toàn các loại bệnh hiểm nghèo trong cộng đồng.",
-            "C": "AI thay thế đội ngũ y bác sĩ trong toàn bộ hoạt động khám chữa bệnh.",
-            "D": "AI đảm bảo mọi bệnh nhân đều được điều trị với chi phí thấp nhất."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 9,
-          "number": 9,
-          "question": "[TH] Ứng dụng nào sau đây thể hiện khả năng giải quyết vấn đề của AI?",
-          "options": {
-            "A": "Phần mềm nhận diện chữ viết tay trong văn bản số.",
-            "B": "Hệ thống tối ưu lịch học của toàn trường dựa trên ràng buộc.",
-            "C": "Hệ chuyên gia đưa ra chẩn đoán bệnh dựa trên triệu chứng.",
-            "D": "Xe tự lái nhận biết tín hiệu và điều khiển phương tiện."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 10,
-          "number": 10,
-          "question": "Tình huống nào sau đây thể hiện sự khác biệt rõ rệt giữa AI hẹp và AI rộng?",
-          "options": {
-            "A": "Hệ thống nhận diện biển báo chỉ hoạt động trong lĩnh vực giao thông.",
-            "B": "Máy tính có tốc độ xử lí nhanh nhờ phần cứng tiên tiến.",
-            "C": "Phần mềm dịch tự động từ tiếng Anh sang tiếng Việt.",
-            "D": "Công cụ kiểm tra chính tả trong quá trình soạn văn bản."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 11,
-          "number": 11,
-          "question": "Trong sản xuất, AI thường được áp dụng để thực hiện công việc nào?",
-          "options": {
-            "A": "Quản lí tài chính và kế hoạch phát triển của doanh nghiệp.",
-            "B": "Phân loại sản phẩm và tối ưu quản lí chuỗi cung ứng.",
-            "C": "Xử lí văn bản và tài liệu hành chính của công ty.",
-            "D": "Giao tiếp với khách hàng bằng hệ thống chatbot tự động."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 12,
-          "number": 12,
-          "question": "AI có thể thực hiện nhiệm vụ nào sau đây thông qua khả năng hiểu ngôn ngữ?",
-          "options": {
-            "A": "Đọc văn bản và dịch thuật.",
-            "B": "Dự đoán thời tiết.",
-            "C": "Nhận dạng hình ảnh.",
-            "D": "Xử lý hóa đơn."
-          },
-          "correct_answer": "A",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 13,
-          "number": 13,
-          "question": "Hệ chuyên gia MYCIN là một ứng dụng của AI trong lĩnh vực nào sau đây?",
-          "options": {
-            "A": "Giáo dục.",
-            "B": "Y học.",
-            "C": "Thương mại điện tử.",
-            "D": "Giao thông."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 14,
-          "number": 14,
-          "question": "Robot Asimo thể hiện đặc trưng nào của AI qua khả năng chào hỏi bằng ngôn ngữ tự nhiên?",
-          "options": {
-            "A": "Khả năng học.",
-            "B": "Khả năng nhận thức.",
-            "C": "Khả năng hiểu ngôn ngữ.",
-            "D": "Khả năng giải quyết vấn đề."
-          },
-          "correct_answer": "C",
-          "explanation": "",
-          "type": "standard"
-        },
-        {
-          "id": 15,
-          "number": 15,
-          "question": "Google dịch là một ứng dụng AI trong lĩnh vực nào sau đây?",
-          "options": {
-            "A": "Dự báo thời tiết.",
-            "B": "Xử lý ngôn ngữ tự nhiên.",
-            "C": "Hệ thống chuyên gia.",
-            "D": "Tự động hóa công nghiệp."
-          },
-          "correct_answer": "B",
-          "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 16,
@@ -1814,7 +228,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 17,
@@ -1828,7 +242,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 18,
@@ -1842,7 +256,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 19,
@@ -1856,7 +270,7 @@
           },
           "correct_answer": "A",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 20,
@@ -1870,7 +284,7 @@
           },
           "correct_answer": "C",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 21,
@@ -1884,7 +298,7 @@
           },
           "correct_answer": "C",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 22,
@@ -1898,7 +312,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 23,
@@ -1912,7 +326,7 @@
           },
           "correct_answer": "B",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 24,
@@ -1926,12 +340,12 @@
           },
           "correct_answer": "D",
           "explanation": "",
-          "type": "standard"
+          "type": "tl1"
         },
         {
           "id": 25,
           "number": 25,
-          "question": "[TL1] An được giao nhiệm vụ tìm hiểu về các ứng dụng của trí tuệ nhân tạo trong đời sống. An tìm thấy một số ví dụ như xe tự lái, robot phẫu thuật, hệ thống nhận dạng khuôn mặt. An muốn biết những ứng dụng này có thực sự là trí tuệ nhân tạo hay không. Em hãy giúp An giải đáp thắc mắc này nhé.",
+          "question": "An được giao nhiệm vụ tìm hiểu về các ứng dụng của trí tuệ nhân tạo trong đời sống. An tìm thấy một số ví dụ như xe tự lái, robot phẫu thuật, hệ thống nhận dạng khuôn mặt. An muốn biết những ứng dụng này có thực sự là trí tuệ nhân tạo hay không. Em hãy giúp An giải đáp thắc mắc này nhé.",
           "options": {
             "A": "Xe tự lái là một ứng dụng của trí tuệ nhân tạo.",
             "B": "Robot phẫu thuật là một ứng dụng của trí tuệ nhân tạo.",
@@ -1944,7 +358,7 @@
             "C"
           ],
           "explanation": "",
-          "type": "standard"
+          "type": "tl2"
         },
         {
           "id": 26,
@@ -1967,7 +381,7 @@
         {
           "id": 27,
           "number": 27,
-          "question": "[TL3] Trí tuệ nhân tạo (AI) là một ngành khoa học và công nghệ tập trung vào việc tạo ra các hệ thống thông minh có khả năng thực hiện các nhiệm vụ đòi hỏi trí thông minh của con người. Sự phát triển của AI đã mang lại nhiều ứng dụng cách mạng trong đời sống và khoa học. An và Hải đang tranh luận với nhau về ngành khoa học này. An đưa ra các nhận định sau đây?",
+          "question": "Trí tuệ nhân tạo (AI) là một ngành khoa học và công nghệ tập trung vào việc tạo ra các hệ thống thông minh có khả năng thực hiện các nhiệm vụ đòi hỏi trí thông minh của con người. Sự phát triển của AI đã mang lại nhiều ứng dụng cách mạng trong đời sống và khoa học. An và Hải đang tranh luận với nhau về ngành khoa học này. An đưa ra các nhận định sau đây?",
           "options": {
             "A": "Một trong những mục tiêu chính của AI là chế tạo ra các hệ thống có khả năng mô phỏng, bắt chước các khả năng tư duy và hành vi của con người.",
             "B": "Học máy (Machine Learning) là lĩnh vực duy nhất và cốt lõi tạo nên Trí tuệ nhân tạo, và không bao gồm các lĩnh vực khác như Xử lí ngôn ngữ tự nhiên (NLP) hay Thị giác máy tính (Computer Vision).",
@@ -1979,12 +393,12 @@
             "C"
           ],
           "explanation": "",
-          "type": "standard"
+          "type": "tl2"
         },
         {
           "id": 28,
           "number": 28,
-          "question": "[TL4] Cô giáo muốn giới thiệu cho học sinh về khái niệm trí tuệ nhân tạo. Cô ấy muốn giải thích cho các em hiểu sự khác biệt giữa trí tuệ nhân tạo và tự động hóa. Hãy giúp cô giáo xác định những phát biểu sau đây đúng hay sai.",
+          "question": "Cô giáo muốn giới thiệu cho học sinh về khái niệm trí tuệ nhân tạo. Cô ấy muốn giải thích cho các em hiểu sự khác biệt giữa trí tuệ nhân tạo và tự động hóa. Hãy giúp cô giáo xác định những phát biểu sau đây đúng hay sai.",
           "options": {
             "A": "Trí tuệ nhân tạo có khả năng thực hiện các nhiệm vụ thông minh mà trước đây chỉ con người mới làm được.",
             "B": "Tự động hóa là khả năng của máy móc thực hiện các công việc một cách tự động.",
@@ -1997,13 +411,13 @@
             "D"
           ],
           "explanation": "",
-          "type": "standard"
+          "type": "tl2"
         }
       ],
       "allow_multiple_answers": true,
       "created_by": "1",
       "created_by_name": "colan",
-      "created_at": "2025-10-26T21:08:21.131764"
+      "created_at": "2025-10-27T11:07:05.753181"
     }
   ]
 }
